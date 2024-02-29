@@ -1,0 +1,97 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content1 %}
+<form method="GET">
+    <br>
+    <br>
+    {{ filter.form.as_p }}
+    <input type="submit" value="Найти">
+    <br>
+    <br>
+</form>
+<h1>Отобранные новости</h1>
+
+{% if filter.qs %}
+{{ filter.qs.count }}
+<table>
+    <tr>
+        <td>
+            Заголовок
+        </td>
+        <td>
+            Дата публикации
+        </td>
+        <td>
+            Текст статьи
+        </td>
+    </tr>
+    {% for post in filter.qs %}
+    <tr>
+        <td>
+            {{ post.title|censor }}
+        </td>
+        <td>
+            {{ post.dateCreation }}
+        </td>
+        <td>
+            {{ post.text|censor }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<h2>Новостей нет!</h2>
+{% endif %}
+<br>
+{% if is_paginated %}
+    {% if page_obj.has_previous %}
+        <a href="?{% url_for_filter page=1 %}">First</a>
+        <a href="?{% url_for_filter page=page_obj.previous_page_number %}"> <<< </a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a>{{ num }}</a>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?{% url_for_filter page=num %}">{{ num }}</a>
+            {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?{% url_for_filter page=page_obj.next_page_number %}"> >>> </a>
+        <a href="?{% url_for_filter page=page_obj.paginator.num_pages %}"> Last </a>
+    {% endif %}
+{% endif %}
+<br>
+<br>
+<br>
+<br>
+<button><a href="/news/signup/">Зарегистрироваться</a></button>
+<br>
+<br>
+<button><a href="subscribers/">Подписаться на категории новостей</a></button>
+<br>
+<br>
+<button><a href="/appnews/news/create/">Добавить новость</a></a> </button>
+<br>
+<br>
+<button><a href="appnews/articles/create/">Добавить статью</a></a> </button>
+<br>
+<br>
+{% if request.user.is_authenticated %}
+<button><a href="upgrade/">Стать автором</a></a> </button>
+{% endif %}
+<br>
+<br>
+<br>
+{% if request.user.is_authenticated %}
+<button><a href="add/appnews/logout/">Выйти</a></button>
+{% endif %}
+{% endblock content1 %}

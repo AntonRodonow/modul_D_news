@@ -1,0 +1,62 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+{% block content1 %}
+    <table>
+        <thead>
+            <th>
+                Автор
+            </th>
+            <th>
+                Категория новости
+            </th>
+            <th>
+                Дата создания
+            </th>
+            <th>
+                Заголовок
+            </th>
+            <th>
+                Текст новости
+            </th>
+            <th>
+                Рейтинг новости
+            </th>
+            <th>
+                Рейтинг автора
+            </th>
+        </thead>
+        <tr>
+            <td>
+                {{ post.author.authorUser }}
+            </td>
+            <td>
+                {{ post.get_categoryType_display }}
+            </td>
+            <td>
+                {{ post.dateCreation|date:'d.m.Y, H:i:s' }}
+            </td>
+            <td>
+                {{ post.title|censor }}
+            </td>
+            <td>
+                {{ post.text|censor }}
+            </td>
+            <td>
+                {{ post.rating }}
+            </td>
+            <td>
+                {{ post.author.ratingAuthor }}
+            </td>
+        </tr>
+    </table>
+    <br>
+    <button> <a href="/appnews/subscribers/">Подписаться на категории новостей</a> </button>
+    <br>
+{% endblock content1 %}

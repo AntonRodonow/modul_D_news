@@ -1,0 +1,202 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content1 %}
+
+<hr>
+<h5>Добавить свои статьи и новости, пройдя по ссылке ниже, жми кнопку</h5>
+<button><a href="/appnews/Aricles">Почитать статьи</a></button>
+<button><a href="/appnews/News">Почитать новости</a></button>
+<h3>У нас {{ news|length }} новостей и статей, {{ Article|length }} статей, {{ New|length }} новостей</h3>
+<br>
+<h5>Поиск новостей и статей по автору и дате публикации, пройдя по ссылке ниже, жми кнопку</h5>
+<button><a href="/appnews/search">Поиск новостей</a></button>
+<br>
+
+
+
+
+<br>
+{% if request.path == '/appnews/Aricles/' %}
+<button><a href="/appnews/articles/create/">Добавить Статью</a></button>
+{% if Article %}
+<table>
+    <thead>
+    <th>
+        Заголовок
+    </th>
+    <th>
+        Дата публикации
+    </th>
+    <th>
+        Текст статьи
+    </th>
+    </thead>
+
+    {% for article in Article %}
+    <tr>
+        <td>
+            <a href="{% url 'news_detail' article.id %}">{{ article.title|censor }}</a>
+            <a href="{% url 'articles_update' article.id %}"><u>Редактировать</u></a>
+            <a href="{% url 'articles_delete' article.id %}"><u> Удалить </u></a>
+        </td>
+        <td>
+            {{ article.dateCreation|date:'Число d.m.Y Время h:i:s' }}
+        </td>
+        <td>
+            {{ article.text|truncatewords:20|censor }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <h2>Статей нет!</h2>
+{% endif %}
+<br>
+<br>
+<br>
+<button><a href="/appnews/articles/create/">Добавить Статью</a></button>
+<br>
+
+
+
+
+
+
+{% elif request.path == '/appnews/News/' %}
+<button><a href="/appnews/news/create/">Добавить Новость</a></button>
+{% if New %}
+<table>
+    <thead>
+    <th>
+        Заголовок
+    </th>
+    <th>
+        Дата публикации
+    </th>
+    <th>
+        Текст статьи
+    </th>
+    </thead>
+
+    {% for new in New %}
+    <tr>
+        <td>
+            <a href="{% url 'news_detail' new.id %}">{{ new.title|censor }}</a>
+            <a href="{% url 'news_update' new.id %}"><u>Редактировать</u></a>
+            <a href="{% url 'news_delete' new.id %}"><u> Удалить </u></a>
+        </td>
+        <td>
+            {{ new.dateCreation|date:'M d Y' }}
+        </td>
+        <td>
+            {{ new.text|truncatewords:20|censor }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <h2>Статей нет!</h2>
+{% endif %}
+<br>
+<br>
+<button><a href="/appnews/news/create/">Добавить Новость</a></a> </button>
+<br>
+<br>
+
+
+
+
+
+
+
+
+
+{% elif request.path == '/appnews/' %}
+<h1>Постраничный вывод новостей</h1>
+{% if posts %}
+<table>
+    <thead>
+    <th>
+        Заголовок
+    </th>
+    <th>
+        Дата публикации
+    </th>
+    <th>
+        Текст статьи
+    </th>
+    </thead>
+
+    {% for post in posts %}
+    <tr>
+        <td>
+            <a href="{% url 'news_detail' post.id %}">{{ post.title|censor }}</a>
+            <a href="{% url 'news_update' post.id %}"><u>Редактировать</u></a>
+            <a href="{% url 'news_delete' post.id %}"><u> Удалить </u></a>
+        </td>
+        <td>
+            {{ post.dateCreation|date:'M d Y' }}
+        </td>
+        <td>
+            {{ post.text|truncatewords:20|censor }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <h2>Новостей нет!</h2>
+{% endif %}
+<br>
+<br>
+{% if is_paginated %}
+    {% if page_obj.has_previous %}
+        <a href="?{% url_for_filter page=1 %}">First</a>
+        <a href="?{% url_for_filter page=page_obj.previous_page_number %}"> <<< </a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a>{{ num }}</a>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?{% url_for_filter page=num %}">{{ num }}</a>
+            {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?{% url_for_filter page=page_obj.next_page_number %}"> >>> </a>
+        <a href="?{% url_for_filter page=page_obj.paginator.num_pages %}"> Last </a>
+    {% endif %}
+{% endif %}
+{% endif %}
+<br>
+<br>
+{% endblock content1 %}
+
+
+{% block content2 %}
+<br>
+<button><a href="/news/signup/">Зарегистрироваться</a></button>
+<br>
+<br>
+<button><a href="subscribers/">Подписаться на категории новостей</a></button>
+<br>
+
+
+<br>
+{% if request.user.is_authenticated %}
+    <button><a href="upgrade/">Стать автором</a></a> </button>
+{% endif %}
+<br>
+<br>
+<br>
+{% if request.user.is_authenticated %}
+    <button><a href="add/appnews/logout/">Выйти</a></button>
+{% endif %}
+{% endblock content2 %}

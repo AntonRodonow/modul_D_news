@@ -13,7 +13,7 @@ Posts
 <h5>Добавить свои статьи и новости, пройдя по ссылке ниже, жми кнопку</h5>
 <button><a href="/appnews/Aricles">Почитать статьи</a></button>
 <button><a href="/appnews/News">Почитать новости</a></button>
-<h3>У нас {{ news|length }} новостей и статей, {{ Article|length }} статей, {{ New|length }} новостей</h3>
+<h3>У нас {{ news|length }} публикаций, {{ Article|length }} статей, {{ New|length }} новостей</h3>
 <br>
 <h5>Поиск новостей и статей по автору и дате публикации, пройдя по ссылке ниже, жми кнопку</h5>
 <button><a href="/appnews/search">Поиск новостей</a></button>
@@ -47,7 +47,7 @@ Posts
             <a href="{% url 'articles_delete' article.id %}"><u> Удалить </u></a>
         </td>
         <td>
-            {{ article.dateCreation|date:'Число d.m.Y Время h:i:s' }}
+            {{ article.dateCreation|date:'Дата d.m.Y Время h:i:s' }}
         </td>
         <td>
             {{ article.text|truncatewords:20|censor }}
@@ -93,7 +93,7 @@ Posts
             <a href="{% url 'news_delete' new.id %}"><u> Удалить </u></a>
         </td>
         <td>
-            {{ new.dateCreation|date:'M d Y' }}
+            {{ new.dateCreation|date:'Дата d.m.Y Время h:i:s' }}
         </td>
         <td>
             {{ new.text|truncatewords:20|censor }}

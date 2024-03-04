@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-1suie7kx43xwm@np$ipd)aji957yn0119gzkobaa@j@$5)9%o9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # !!!!!!!!
+ALLOWED_HOSTS = []  # '127.0.0.1', 'localhost' пока это не требуется
 
 
 # Application definition
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    'allauth',
+    # 'allauth',  # пока не нужен
     'appnews',
     'django_filters',
 ]
@@ -54,6 +54,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 ]
+
+SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), по мимо прочего, при ошибках, отсутствыие SITE_ID не вызовет сбой в работе сайта
 
 ROOT_URLCONF = 'news_project.urls'
 
@@ -111,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'  # TIME_ZONE = 'Europe/Moscow' или 'UTC' - в базе данных абсолюное время (нулевой пояс), а TIME_ZONE показывает относительное время (Московское)
 
 USE_I18N = True
 
@@ -129,9 +131,9 @@ STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 
-SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), по мимо прочего
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'  # переопределение по умолчанию праймори ки во всем проекте

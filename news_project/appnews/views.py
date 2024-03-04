@@ -106,7 +106,7 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     success_url = '/appnews'
 
 
-class CategoryView(FormView, View, Category):  # добавил View, Category, Post вероятно не нужны!!!!! (старый комент, проверю)
-    # form_class = CategorySubscribers
-    template_name = 'appnews/subscribers.html'
-    success_url = '/appnews'
+# class CategoryView(FormView, View, Category):  # добавил View, Category, Post вероятно не нужны!!!!! (старый комент, проверю)
+#     # form_class = CategorySubscribers
+#     template_name = 'appnews/subscribers.html'
+#     success_url = '/appnews'

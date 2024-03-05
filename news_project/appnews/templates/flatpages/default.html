@@ -43,9 +43,16 @@
     <div class="container">
     <div class="row">
         <div class="col-lg-15 text-center">
-            <h1><a href="/appnews/login/">Sign Up / Sign In</a> or <a href="/appnews">NEWS</a></h1>
+            <h1><a href="{% url 'login' %}">Sign Up / Sign In (войти)</a> or <a href="/appnews">NEWS</a>
+            {% if request.user.is_authenticated %}
+                or <a href="/accounts/logout/">Выйти</a>
+            {% endif %}</h1>
+             <h3>Пользователь: {{request.user.username}}</h3>{# как отобразить группу / ур. допуска юзера?  #}
+            {% if not request.user.username %}
+             <h3>Не авторизован</h3>
+            {% endif %}
             {% load custom_tags %}
-            <h3>Текущая дата: {% ctime '%b %d %Y %I:%M%p' %}</h3>
+            <h3>Текущая дата: {% ctime '%b %d %Y Время: %H:%M' %}</h3>
             {% block content1 %}
             {{ flatpage.content }}
             {% endblock content1 %}

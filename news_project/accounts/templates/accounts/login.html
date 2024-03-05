@@ -1,0 +1,32 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content1 %}
+<h2> Войти в систему </h2>
+<center>
+<form method="post" action="{% url 'login' %}">
+{% csrf_token %}
+<table>
+<tr>
+    <td>{{ form.username.label_tag }}</td>
+    <td>{{ form.username }}</td>
+</tr>
+<tr>
+    <td>{{ form.password.label_tag }}</td>
+    <td>{{ form.password }}</td>
+</tr>
+</table>
+
+<input type="submit" value="Войти">
+</form></center>
+<br>
+<button> <a href="/accounts/google/login"> Google (Пока/уже не работает (на http) - купи SSL-сертификат) </a></button>
+<br>
+<br>
+<button> <a href="/accounts/yandex/login"> Yandex </a></button>
+<br>
+<br>
+<button> <a href="/accounts/signup"> Регистрация нового пользователя </a></button>
+<br>
+<br>
+<button> <a href="/appnews/"> Хочу смотреть публикации без регистрации </a></button>
+{% endblock content1 %}

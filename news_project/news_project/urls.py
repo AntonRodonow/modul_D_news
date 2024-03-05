@@ -18,6 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path('', include('appnews.urls')),  # для простоты
     path('admin/', admin.site.urls),
     path('appnews/', include('appnews.urls')),
+    path('accounts/', include('accounts.urls')),  # приложение для создания пользователей
+    path('accounts/', include('allauth.urls')),  # нужен для аутентификации по почте, возможно придется переимновать путь
 ]

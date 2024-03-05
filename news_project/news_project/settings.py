@@ -25,22 +25,33 @@ SECRET_KEY = 'django-insecure-1suie7kx43xwm@np$ipd)aji957yn0119gzkobaa@j@$5)9%o9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []  # '127.0.0.1', 'localhost' пока это не требуется
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:<port_number>', ]  # '127.0.0.1', 'localhost' - было пусто. Нужно для гугл авторизации
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
+    'django.contrib.auth',  # провека уровня доступа авторизованного пользователя на какое-либо действие, дает класс User, необходим для регистрации по др. аккаунтов
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
+    'django.contrib.messages',  # необходим также для рег по др. аккаунтов
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    # 'allauth',  # пока не нужен
+
+    # нужны для рег по др. аккаунтам:
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.yandex',
+
+    # мои приложения:
     'appnews',
+    'accounts',
+
+    # загруженные устанавливаемые пакеты:
     'django_filters',
 ]
 
@@ -53,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    "allauth.account.middleware.AccountMiddleware",  # нужен для рег по др. аккаунтам
 ]
 
 SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), по мимо прочего, при ошибках, отсутствыие SITE_ID не вызовет сбой в работе сайта
@@ -74,6 +86,25 @@ TEMPLATES = [
         },
     },
 ]
+
+
+# Для регистрации с др. ресурсов AUTHENTICATION_BACKENDS (гугл,яндекс аккаунтов):
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Для регистрации через почту
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'   # поменял none на mandatory. Обычно на почту отправляется подтверждение
+# аккаунта, после подтверждения которого восстанавливается полная функциональность учётной записи "none"(без подтвержд)
+ACCOUNT_FORMS = {'signup': 'account.models.BaseRegisterForm'}  # вообще работала форма регистрации и без этой записи
+
 
 WSGI_APPLICATION = 'news_project.wsgi.application'
 
@@ -131,9 +162,11 @@ STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'  # переопределение по умолчанию праймори ки во всем проекте
+
+LOGIN_URL = '/accounts/login/'  # ссылка на страницу входа, а вот нужен ли первый слеш???? Нужен, это говорит об абсолютном пути, без него этим путем дописыватся существующий
+LOGIN_REDIRECT_URL = '/appnews/'  # после входа автоперенаправление на страницу с новостями
+LOGOUT_REDIRECT_URL = '/appnews/'  # соответственно при выходе из аккаунта

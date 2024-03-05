@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 # Create your views here.
 # from django.core.paginator import Paginator  # Для будущей пагинации после фитьрации кверисета статей
@@ -42,9 +42,9 @@ class PostDetailView(DetailView):
     context_object_name = 'post'
 
 
-class PostAddView(PermissionRequiredMixin, CreateView):
+class PostAddView(PermissionRequiredMixin, CreateView):  # LoginRequiredMixin не требуется т.к. пермишен его перекрывает
     """
-    Добавить статью или новость
+    Опубликовать статью или новость
     """
     form_class = PostForm
     model = Post
@@ -76,6 +76,7 @@ class PostListFilter(ListView):
         # context['page_obj'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+    # для пагинации:
     # def list_f(self, request):
     #     list_filtered = PostFilter(self.request.GET, queryset=self.get_queryset())
     #     paginator = Paginator(list_filtered, 1)
@@ -84,7 +85,7 @@ class PostListFilter(ListView):
     #     return render(request, "postsfilter.html", {"page_obj": page_obj})
 
 
-class PostUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+class PostUpdateView(PermissionRequiredMixin, UpdateView):  # убрал лишнее LoginRequiredMixin,
     """
     Редактирование статьи или новости
     """
@@ -97,13 +98,14 @@ class PostUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
         return Post.objects.get(pk=id)
 
 
-class PostDeleteView(LoginRequiredMixin, DeleteView):
+class PostDeleteView(PermissionRequiredMixin, DeleteView):
     """
     Удаление статей или новостей
     """
     queryset = Post.objects.all()
     template_name = 'appnews/post_delete.html'
     success_url = '/appnews'
+    permission_required = ('appnews.delete_post',)
 
 
 # class CategoryView(FormView, View, Category):  # добавил View, Category, Post вероятно не нужны!!!!! (старый комент, проверю)

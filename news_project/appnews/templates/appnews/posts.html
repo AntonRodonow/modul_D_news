@@ -4,19 +4,27 @@
 {% load custom_tags %}
 
 {% block title %}
-Posts
+{% if request.path == '/appnews/Aricles/' %}
+Статьи
+{% endif %}
+{% if request.path == '/appnews/News/' %}
+Новости
+{% endif %}
+{% if request.path == '/appnews/' %}
+Публикации
+{% endif %}
 {% endblock title %}
 
 {% block content1 %}
 
 <hr>
-<h5>Добавить свои статьи и новости, пройдя по ссылке ниже, жми кнопку</h5>
+<h5>Добавить свои статьи и новости, пройдя по ссылке ниже, прожимай кнопку</h5>
 <button><a href="/appnews/Aricles">Почитать статьи</a></button>
 <button><a href="/appnews/News">Почитать новости</a></button>
 <h3>У нас {{ news|length }} публикаций, {{ Article|length }} статей, {{ New|length }} новостей</h3>
 <br>
-<h5>Поиск новостей и статей по автору и дате публикации, пройдя по ссылке ниже, жми кнопку</h5>
-<button><a href="/appnews/search">Поиск новостей</a></button>
+<h5>Поиск новостей и статей по автору и дате публикации, пройдя по ссылке ниже, прожимай кнопку</h5>
+<button><a href="/appnews/search">Поиск публикаций</a></button>
 <br>
 
 
@@ -24,15 +32,17 @@ Posts
 
 <br>
 {% if request.path == '/appnews/Aricles/' %}
+{% if perms.appnews.add_post %}
 <button><a href="/appnews/articles/create/">Добавить Статью</a></button>
+{% endif %}
 {% if Article %}
 <table>
     <thead>
     <th>
-        Заголовок
+        Заголовок статьи
     </th>
     <th>
-        Дата публикации
+        Дата статьи
     </th>
     <th>
         Текст статьи
@@ -61,7 +71,9 @@ Posts
 <br>
 <br>
 <br>
+{% if perms.appnews.add_post %}
 <button><a href="/appnews/articles/create/">Добавить Статью</a></button>
+{% endif %}
 <br>
 
 
@@ -70,18 +82,20 @@ Posts
 
 
 {% elif request.path == '/appnews/News/' %}
-<button><a href="/appnews/news/create/">Добавить Новость</a></button>
+{% if perms.appnews.add_post %}
+<button><a href="/appnews/news/create/">Добавить новость</a></button>
+{% endif %}
 {% if New %}
 <table>
     <thead>
     <th>
-        Заголовок
+        Заголовок новости
     </th>
     <th>
-        Дата публикации
+        Дата новости
     </th>
     <th>
-        Текст статьи
+        Текст новости
     </th>
     </thead>
 
@@ -102,11 +116,13 @@ Posts
     {% endfor %}
 </table>
 {% else %}
-    <h2>Статей нет!</h2>
+    <h2>Новостей нет!</h2>
 {% endif %}
 <br>
 <br>
-<button><a href="/appnews/news/create/">Добавить Новость</a></a> </button>
+{% if perms.appnews.add_post %}
+<button><a href="/appnews/news/create/">Добавить новость</a></button>
+{% endif %}
 <br>
 <br>
 
@@ -119,18 +135,18 @@ Posts
 
 
 {% elif request.path == '/appnews/' %}
-<h1>Постраничный вывод новостей</h1>
+<h1>Постраничный вывод публикаций</h1>
 {% if posts %}
 <table>
     <thead>
     <th>
-        Заголовок
+        Заголовок публикации
     </th>
     <th>
         Дата публикации
     </th>
     <th>
-        Текст статьи
+        Текст публикации
     </th>
     </thead>
 
@@ -151,7 +167,7 @@ Posts
     {% endfor %}
 </table>
 {% else %}
-    <h2>Новостей нет!</h2>
+    <h2>Публикаций нет!</h2>
 {% endif %}
 <br>
 <br>
@@ -182,7 +198,9 @@ Posts
 
 {% block content2 %}
 <br>
-<button><a href="/news/signup/">Зарегистрироваться</a></button>
+{% if not request.user.is_authenticated %}
+<button><a href="{% url 'signup' %}">Зайти под своим логином и паролем</a></button>
+{% endif %}
 <br>
 <br>
 <button><a href="subscribers/">Подписаться на категории новостей</a></button>
@@ -197,6 +215,6 @@ Posts
 <br>
 <br>
 {% if request.user.is_authenticated %}
-    <button><a href="add/appnews/logout/">Выйти</a></button>
+    <button><a href="/accounts/logout/">Выйти</a></button>
 {% endif %}
 {% endblock content2 %}

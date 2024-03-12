@@ -1,0 +1,8 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content1 %}
+<h2> Вы вышли из системы </h2>
+    {# как здаесь сослаться на user.username? #}
+<br>
+<h3><a href="{% url 'login'%}">Войти</a></h3>
+{% endblock content1 %}

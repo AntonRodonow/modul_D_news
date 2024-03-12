@@ -4,7 +4,7 @@
 {% load custom_tags %}
 
 {% block title %}
-{% if request.path == '/appnews/Aricles/' %}
+{% if request.path == '/appnews/Articles/' %}
 Статьи
 {% endif %}
 {% if request.path == '/appnews/News/' %}
@@ -15,13 +15,25 @@
 {% endif %}
 {% endblock title %}
 
+{% block content1sub %}
+{% endblock content1sub %}
+
 {% block content1 %}
 
 <hr>
+
 <h5>Добавить свои статьи и новости, пройдя по ссылке ниже, прожимай кнопку</h5>
-<button><a href="/appnews/Aricles">Почитать статьи</a></button>
+<button><a href="/appnews/Articles">Почитать статьи</a></button>
 <button><a href="/appnews/News">Почитать новости</a></button>
+    {% if request.path == '/appnews/Articles/' %}
+<h3>У нас {{ news|length }} публикаций, {{ Article|length }} статей</h3>
+    {% endif %}
+    {% if request.path == '/appnews/News/' %}
+<h3>У нас {{ news|length }} публикаций, {{ New|length }} новостей</h3>
+    {% endif %}
+    {% if request.path == '/appnews/' %}
 <h3>У нас {{ news|length }} публикаций, {{ Article|length }} статей, {{ New|length }} новостей</h3>
+    {% endif %}
 <br>
 <h5>Поиск новостей и статей по автору и дате публикации, пройдя по ссылке ниже, прожимай кнопку</h5>
 <button><a href="/appnews/search">Поиск публикаций</a></button>
@@ -31,7 +43,7 @@
 
 
 <br>
-{% if request.path == '/appnews/Aricles/' %}
+{% if request.path == '/appnews/Articles/' %}
 {% if perms.appnews.add_post %}
 <button><a href="/appnews/articles/create/">Добавить Статью</a></button>
 {% endif %}
@@ -136,6 +148,12 @@
 
 {% elif request.path == '/appnews/' %}
 <h1>Постраничный вывод публикаций</h1>
+<small class="fw-bold">Выберите категорию поубликаций:
+        {% for category in categories.all %} <br><a href="{% url 'category_list' category.id %}">
+            {{ category }}</a>
+        {% endfor %}
+</small>
+
 {% if posts %}
 <table>
     <thead>
@@ -203,13 +221,13 @@
 {% endif %}
 <br>
 <br>
-<button><a href="subscribers/">Подписаться на категории новостей</a></button>
+
 <br>
 
 
 <br>
 {% if request.user.is_authenticated %}
-    <button><a href="upgrade/">Стать автором</a></a> </button>
+    <button><a href="upgrade/">Стать автором</a></button>
 {% endif %}
 <br>
 <br>

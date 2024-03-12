@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include('appnews.urls')),  # для простоты
+    path('', include('appnews.urls')),  # для стадии тестирования, простой достук к главной странице проекта
     path('admin/', admin.site.urls),
-    path('appnews/', include('appnews.urls')),
+    path('appnews/', include('appnews.urls')),  # основаная логика проекта
     path('accounts/', include('accounts.urls')),  # приложение для создания пользователей
-    path('accounts/', include('allauth.urls')),  # нужен для аутентификации по почте, возможно придется переимновать путь
+    path('accounts/', include('allauth.urls')),  # приложение для организации приветственной почтовой рассылки, расширение прав users
 ]

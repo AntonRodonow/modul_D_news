@@ -1,0 +1,87 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+{% if request.path == '/appnews/Aricles/' %}
+Статьи
+{% endif %}
+{% if request.path == '/appnews/News/' %}
+Новости
+{% endif %}
+{% if request.path == '/appnews/' %}
+Публикации
+{% endif %}
+{% endblock title %}
+
+{% block content1 %}
+
+<hr>
+<h5>Добавить свои статьи и новости, пройдя по ссылке ниже, прожимай кнопку</h5>
+<button><a href="/appnews/Articles">Почитать статьи</a></button>
+<button><a href="/appnews/News">Почитать новости</a></button><hr>
+<h3>У нас {{ posts|length }} публикаций, {{ catpost|length }} публикаций в категории {{ category }}</h3>
+<br>
+<h5>Поиск новостей и статей по автору и дате публикации, пройдя по ссылке ниже, прожимай кнопку</h5>
+<button><a href="/appnews/search"> Поиск публикаций </a> </button>
+<br>
+<br>
+{% if is_subscriber %}
+<button><a href={% url "subscribe" category.id %}>Отписаться от категории {{ category }} новостей</a></button>
+{% endif %}
+{% if not is_subscriber %}
+<button><a href={% url "subscribe" category.id %}>Подписаться на категорию {{ category }} новостей</a></button>
+{% endif %}
+<br>
+<hr>
+
+{# такая проверка бы подошла если у нас несколько видов вывода на данный шаблон. Не смог реализовать проверку пути#}
+{# с id на конце пути: #}
+{% if categorylistview == True %}
+
+<h4>Постраничный вывод публикаций категории: {{ category }}</h4><hr>
+{% if category_news_list %}
+    <ul class="list-group list-group-flush">
+    {% for news in category_news_list %}
+        <li class="list-group-item">
+        <small class="fw-bold"> {{ news.dateCreation|date:' d. m. Y' }} </small>
+        <a href="{% url 'news_detail' news.id %}">{{ news.title | truncatewords:10 | censor  }}</a>
+        <small class="text-muted">(автор: {{ news.author }})</small><br>
+        <small class="fw-bold">Категория: <a href="{% url 'category_list' category.id %}"> {{ category }}</a></small>
+        <p>{{ news.text | truncatewords:40 | censor }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+
+{% else %}
+    <h2>Публикаций нет!</h2>
+{% endif %}
+{% endif %}
+{% endblock content1 %}
+
+
+
+
+
+
+{% block content2 %}
+<br>
+{% if not request.user.is_authenticated %}
+<button><a href="{% url "signup" %}">Зайти под своим логином и паролем</a></button>
+{% endif %}
+<br>
+
+
+
+<br>
+{% if request.user.is_authenticated %}
+    <button><a href="upgrade/">Стать автором</a></button>
+{% endif %}
+<br>
+<br>
+<br>
+{% if request.user.is_authenticated %}
+    <button><a href="/accounts/logout/">Выйти</a></button>
+{% endif %}
+{% endblock content2 %}

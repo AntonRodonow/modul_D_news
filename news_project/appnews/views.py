@@ -1,15 +1,25 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 # Create your views here.
 # from django.core.paginator import Paginator  # Для будущей пагинации после фитьрации кверисета статей
 # from django.shortcuts import render  # # Для будущей пагинации после фитьрации кверисета статей
-from django.views import View
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 
 from .filters import PostFilter
 from .forms import PostForm
-from .models import Post, Category
+from .models import Post, Category, PostCategory
 from datetime import datetime
+from news_project.settings import SERVER_EMAIL
+
+
+# if __package__ is None or __package__ == '':  # интересная конструкция, потом почитать побольше
+#     from news_project.settings import SERVER_EMAIL
+# else:
+#     from news_project.settings import SERVER_EMAIL
 
 
 class PostList(ListView):
@@ -18,16 +28,17 @@ class PostList(ListView):
     """
     model = Post
     template_name = 'appnews/posts.html'  # почему не работает автоматическое определение положения шаблона в папке темплейтс???
-    context_object_name = 'posts'  # вызов объекта из шаблона
+    context_object_name = 'posts'  # вызов объекта из шаблона - поскольку есть поле model = Post, можно задать так, а можно как сейчас в get_context_data
     ordering = '-id'  # или queryset = Post.objects.order_by('-id')
     paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
+        # context['posts'] = Post.objects.all()
         context['form'] = PostForm()
         context['time_now'] = datetime.utcnow()
-        context['news'] = Post.objects.all()
+        context['news'] = Post.objects.all()  # для тестирования, тоже что и context['posts']
         context['Article'] = Post.objects.filter(categoryType="AR")
         context['New'] = Post.objects.filter(categoryType="NW")
         return context
@@ -42,7 +53,7 @@ class PostDetailView(DetailView):
     context_object_name = 'post'
 
 
-class PostAddView(PermissionRequiredMixin, CreateView):  # LoginRequiredMixin не требуется т.к. пермишен его перекрывает
+class PostAddView(PermissionRequiredMixin, CreateView):
     """
     Опубликовать статью или новость
     """
@@ -55,7 +66,7 @@ class PostAddView(PermissionRequiredMixin, CreateView):  # LoginRequiredMixin н
         post = form.save(commit=False)
         if self.request.path == '/appnews/news/create/':
             post.categoryType = 'NW'
-        post.save()
+        post.save
         return super().form_valid(form)
 
 
@@ -108,7 +119,62 @@ class PostDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = ('appnews.delete_post',)
 
 
+class CategoryListView(ListView):
+    """
+    Отображение публикаций одной выбранной категории
+    """
+    model = Post
+    template_name = 'appnews/category_list.html'
+    context_object_name = 'category_news_list'  # список постов в одной категории
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, id=self.kwargs['pk'])  # здесь хранится одна конкретная категория
+        queryset = Post.objects.filter(postArticleCategory=self.category).order_by('-dateCreation')  # сортировка по дате создания статьи, аналогично -id
+        return queryset  # переопределили поле category и добавили его в контекст ниже
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_subscriber'] = self.request.user in self.category.subscribers.all()  # True если юзер не подписан на категорию
+        context['category'] = self.category  # ссылка через модель Post на модель Category (меняю postArticleCategory тут и выше строкой)
+        context['posts'] = Post.objects.all()  # возможно работет без этой строки, подхватывая из модели Post, т.к. мы загружаем модель Post в первой строкой вьюшки
+        context['catpost'] = Post.objects.filter(postArticleCategory=self.category)  # возможно работет без этой строки, подхватывая из модели Post, т.к. мы загружаем модель Post в первой строкой вьюшки
+        context['categorylistview'] = True  # проверка для теплейтса, не обязательная, но пусть останется для примера
+        return context
+
+
 # class CategoryView(FormView, View, Category):  # добавил View, Category, Post вероятно не нужны!!!!! (старый комент, проверю)
 #     # form_class = CategorySubscribers
 #     template_name = 'appnews/subscribers.html'
 #     success_url = '/appnews'
+
+@login_required   # еще один способ на заметку
+def subscribe(request, pk):
+    """Добавление подписки для user на категории публикаций (класса Category).
+    Отправка письма о новой подписке user"""
+    user = request.user
+    uid = user.id
+    category = Category.objects.get(id=pk)
+    qSub = category.subscribers.all()
+    print(qSub, 'Подписчики:', category)
+
+    if not qSub.filter(username=user).exists():  # в данном случае сообщение заменено на html файл
+        category.subscribers.add(user)
+        message = f'{request.user}, вы подписались на рассылку публикаций категории: "{category}".'
+    else:
+        category.subscribers.remove(user)
+        message = f'Пользователь {user} отписался от категории публикаций: "{category}".'
+
+    try:
+        email = category.subscribers.get(id=uid).email
+        # print(f'email: "{email}" Можно отправить уведомление')
+        send_mail(
+            subject=f'News Portal: подписка на обновления категории {category}',
+            message=f'«{user}», вы подписались на обновление категории: «{category}».',
+            from_email=SERVER_EMAIL,
+            recipient_list=[f'{email}', ],
+        )
+
+    except Exception as n:
+        print('Exception вызван для попытки отправить письмо подписчикам о успешной подписке')
+    return render(request, 'appnews/subscribe.html', {'category': category, 'message': message, 'user': user.username})
+    # словарь последним аргументом это замена контекста для шаблона (доступно для render())

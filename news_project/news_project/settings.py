@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
+dotenv_path = Path(".local.env")
+load_dotenv(dotenv_path=dotenv_path)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,16 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1suie7kx43xwm@np$ipd)aji957yn0119gzkobaa@j@$5)9%o9'
+SECRET_KEY = os.getenv("SECRET_KEY")
+    # 'django-insecure-1suie7kx43xwm@np$ipd)aji957yn0119gzkobaa@j@$5)9%o9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:<port_number>', ]  # '127.0.0.1', 'localhost' - было пусто. Нужно для гугл авторизации
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:<port_number>', ]  # '127.0.0.1', 'localhost' - было пусто. Нужно для гугл авторизации;
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',  # провека уровня доступа авторизованного пользователя на какое-либо действие, дает класс User, необходим для регистрации по др. аккаунтов
@@ -41,18 +47,22 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
 
     # нужны для рег по др. аккаунтам:
-    'allauth',
+    'allauth',  # установка совместно pip install django-allauth
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.yandex',
+    'allauth.socialaccount.providers.google',  # не функционирует, т.к. нужен сертификат ssl для https
+
 
     # мои приложения:
-    'appnews',
+    # 'appnews',  # когда дополняем функционал apps делаем обявление приложения, как в строке ниже, как класс в apps:
+    'appnews.apps.AppnewsConfig',
     'accounts',
+    'mail',
 
     # загруженные устанавливаемые пакеты:
     'django_filters',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -64,10 +74,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    "allauth.account.middleware.AccountMiddleware",  # нужен для рег по др. аккаунтам
+    "allauth.account.middleware.AccountMiddleware",  # нужен для рег через сторонние сервисы (напр. яндекс, гугл)
 ]
 
-SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), по мимо прочего, при ошибках, отсутствыие SITE_ID не вызовет сбой в работе сайта
+SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), по мимо прочего, при ошибках, отсутствыие SITE_ID не вызовет сбой в работе сайта, но нужен для работы некоторых сторонних библиотек
+
+SITE_URL = 'http://127.0.0.1:8000'
 
 ROOT_URLCONF = 'news_project.urls'
 
@@ -96,15 +108,16 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# Для регистрации через почту
+# Для регистрации нового пользователя на сайте (эти переменные входят в прилоение-библиотеку allauth):
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'   # поменял none на mandatory. Обычно на почту отправляется подтверждение
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  # код работает и без этой строки
+ACCOUNT_EMAIL_VERIFICATION = 'optional'   # подтверждение на почту отправлено (подтверждать не обязательно для доступа к сайту). 'mandatory' - доступ только после подтверждения с почты
 # аккаунта, после подтверждения которого восстанавливается полная функциональность учётной записи "none"(без подтвержд)
-ACCOUNT_FORMS = {'signup': 'account.models.BaseRegisterForm'}  # вообще работала форма регистрации и без этой записи
-
+ACCOUNT_FORMS = {'signup': 'account.models.BaseRegisterForm'}  # форма регистрации и отправки почты работает и без этой строки кода
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True  # автоактивация аккаунта после регистрации на сайте сразу, как только мы перейдём по ссылке
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # хранит количество дней, когда доступна ссылка на подтверждение регистрации
 
 WSGI_APPLICATION = 'news_project.wsgi.application'
 
@@ -144,7 +157,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Moscow'  # TIME_ZONE = 'Europe/Moscow' или 'UTC' - в базе данных абсолюное время (нулевой пояс), а TIME_ZONE показывает относительное время (Московское)
+TIME_ZONE = 'Europe/Moscow'  # 'UTC' - в базе данных, абсолюное время (нулевой пояс), а TIME_ZONE = 'Europe/Moscow' показывает относительное время (Московское)
 
 USE_I18N = True
 
@@ -156,7 +169,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'  # запись жизненно необходима для работоспособности сайта
 
 STATICFILES_DIRS = [
     BASE_DIR / "static"
@@ -167,6 +180,33 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'  # переопределение по умолчанию праймори ки во всем проекте
 
-LOGIN_URL = '/accounts/login/'  # ссылка на страницу входа, а вот нужен ли первый слеш???? Нужен, это говорит об абсолютном пути, без него этим путем дописыватся существующий
-LOGIN_REDIRECT_URL = '/appnews/'  # после входа автоперенаправление на страницу с новостями
-LOGOUT_REDIRECT_URL = '/appnews/'  # соответственно при выходе из аккаунта
+
+# пути перенаправления:
+LOGIN_REDIRECT_URL = '/appnews/'  # замещение пути из коробки account/profile
+# LOGOUT_REDIRECT_URL = '/appnews/'  # Происодит замещение template_name='accounts/logout.html'-ом указанномв урле прил.
+
+
+# настройка почты с которой будет рассылка писем подписчикам:
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # для тестирования в консоль
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = False  # прописывать это не надо, т.к. False по умолчанию, но помнить стоит
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+EMAIL_SUBJECT_PREFIX = None  # по умолчанию [Django], с ней в теме и приходят письма
+
+
+# настройка для отправки менеджерам и админам компании (из коробки Джанго):
+SERVER_EMAIL = os.getenv("SERVER_EMAIL")
+
+MANAGERS = os.getenv("MANAGERS")
+ADMINS = os.getenv("ADMINS")
+
+
+# формат даты для периодических задач datetime.datetime:
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+# если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds

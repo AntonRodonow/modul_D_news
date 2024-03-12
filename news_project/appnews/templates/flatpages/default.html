@@ -8,9 +8,9 @@
     <meta name="author" content=""/>
     <title>Simple SignUp/SignIn app</title>
     <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+
     <!-- Bootstrap Icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"/>
+
     <!-- Google fonts-->
     <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"
@@ -27,7 +27,7 @@
         <a class="navbar-brand" href="#page-top">Start Bootstrap</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
-                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                aria-label="Toggle navigation"></button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ms-auto my-2 my-lg-0">
                 <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
@@ -43,16 +43,24 @@
     <div class="container">
     <div class="row">
         <div class="col-lg-15 text-center">
-            <h1><a href="{% url 'login' %}">Sign Up / Sign In (войти)</a> or <a href="/appnews">NEWS</a>
             {% if request.user.is_authenticated %}
-                or <a href="/accounts/logout/">Выйти</a>
-            {% endif %}</h1>
+                <h2><a href="{% url 'login' %}">Сменить аккаунт</a>
+            {% endif %}
+            {% if not request.user.is_authenticated %}
+                <h2><a href="{% url 'login' %}">Войти в аккаунт</a>
+            {% endif %}
+                или <a href="/appnews">Посмотреть публикации</a>
+            {% if request.user.is_authenticated %}
+                или <a href="/accounts/logout/">Выйти из аккаунта</a>
+            {% endif %}</h2>
              <h3>Пользователь: {{request.user.username}}</h3>{# как отобразить группу / ур. допуска юзера?  #}
             {% if not request.user.username %}
              <h3>Не авторизован</h3>
             {% endif %}
             {% load custom_tags %}
-            <h3>Текущая дата: {% ctime '%b %d %Y Время: %H:%M' %}</h3>
+            <h3>Текущая дата: {% ctime '%d %b %Y Время: %H:%M' %}</h3>
+            {% block content1sub %}
+            {% endblock content1sub %}
             {% block content1 %}
             {{ flatpage.content }}
             {% endblock content1 %}
@@ -131,8 +139,7 @@
     <div class="container-fluid p-0">
         <div class="row g-0">
             <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/1.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/1.jpg" alt="..."/>
+                <a class="portfolio-box" title="Project Name">
                     <div class="portfolio-box-caption">
                         <div class="project-category text-white-50">Category</div>
                         <div class="project-name">Project Name</div>
@@ -140,8 +147,7 @@
                 </a>
             </div>
             <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/2.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/2.jpg" alt="..."/>
+                <a class="portfolio-box" title="Project Name">
                     <div class="portfolio-box-caption">
                         <div class="project-category text-white-50">Category</div>
                         <div class="project-name">Project Name</div>
@@ -149,8 +155,7 @@
                 </a>
             </div>
             <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/3.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/3.jpg" alt="..."/>
+                <a class="portfolio-box" title="Project Name">
                     <div class="portfolio-box-caption">
                         <div class="project-category text-white-50">Category</div>
                         <div class="project-name">Project Name</div>
@@ -158,8 +163,7 @@
                 </a>
             </div>
             <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/4.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/4.jpg" alt="..."/>
+                <a class="portfolio-box" title="Project Name">
                     <div class="portfolio-box-caption">
                         <div class="project-category text-white-50">Category</div>
                         <div class="project-name">Project Name</div>
@@ -167,8 +171,7 @@
                 </a>
             </div>
             <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/5.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/5.jpg" alt="..."/>
+                <a class="portfolio-box" title="Project Name">
                     <div class="portfolio-box-caption">
                         <div class="project-category text-white-50">Category</div>
                         <div class="project-name">Project Name</div>
@@ -176,8 +179,7 @@
                 </a>
             </div>
             <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/6.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/6.jpg" alt="..."/>
+                <a class="portfolio-box" title="Project Name">
                     <div class="portfolio-box-caption p-3">
                         <div class="project-category text-white-50">Category</div>
                         <div class="project-name">Project Name</div>

@@ -14,16 +14,15 @@ from appnews.tasks import weekly_digest  # если подчеркивает к�
 
 logger = logging.getLogger(__name__)
 
+
 def my_job():
     """Еженедельные рассылки по пятницам в 18:00. кодом python manage.py runapscheduler"""
-    print('my_job')
     weekly_digest()
 
 
-# функция, которая будет удалять неактуальные задачи
+# функция, которая будет удалять неактуальные задачи:
 def delete_old_job_executions(max_age=604_800):  # аргумент max_age в секундах
     """Удаление неактуальных задач из БД (Отправка еженедельных рассылок)"""
-    print('delete_old_job')
     DjangoJobExecution.objects.delete_old_job_executions(max_age)
 
 
@@ -31,20 +30,19 @@ class Command(BaseCommand):
     help = "Runs apscheduler. python manage.py runapscheduler."
 
     def handle(self, *args, **options):
-        scheduler = BlockingScheduler(timezone=settings.TIME_ZONE)
+        scheduler = BlockingScheduler(timezone='Europe/Moscow')
         scheduler.add_jobstore(DjangoJobStore(), "default")
 
         # добавляем работу нашему задачнику
         scheduler.add_job(
             my_job,
-            # trigger=CronTrigger(day_of_week='fri', hour=18, minute='00'),  # Еженедльная отправка по пятницам (можно цифрой 5), врмея цифрой или строкой, 00 по умолчанию
-            trigger=CronTrigger(day_of_week='wed', hour=18, minute='56'), # отправка раз в 1 сек
-            # То же, что и интервал, но задача тригера таким образом более понятна django
+            trigger=CronTrigger(day_of_week='fri', hour=18, minute='00'),  # Еженедльная отправка по пятницам (можно цифрой 5), врмея цифрой или строкой, 00 по умолчанию
+            # trigger=CronTrigger(day_of_week='thu', hour=17, minute='40'),
             id="my_job",
-            max_instances=100,
+            max_instances=10,
             replace_existing=True,
         )
-        print('add job')
+
         logger.info("Added job 'my_job'.")
 
         scheduler.add_job(
@@ -57,7 +55,7 @@ class Command(BaseCommand):
             max_instances=1,
             replace_existing=True,
         )
-        print('addjob')
+
         logger.info(
             "Added weekly job: 'delete_old_job_executions'."
         )

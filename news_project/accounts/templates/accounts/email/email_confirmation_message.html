@@ -6,14 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    {# Загружаем тег который позволит получить нам ссылку на подтверждение #}
-    {% load account %}{% load i18n %}{% autoescape off %}
-    {# Видимо можно удалить site_name=current_site.name: #}
-    {% blocktrans with site_name=current_site.name site_domain=current_site.domain %}
-    <h1>Вы получили это сообщение, потому что пользователь {{ user.username }} указал этот email при регистрации на
-    сайте {{ site_domain }}.
-    Thank you for registering {{ user.username }}!</h1>
-    <h3>Please follow <a href="{{ activate_url }}">the link</a> to activate your account</h3>
-    {% endblocktrans %}{% endautoescape %}
+    <h1>Вы получили это сообщение, потому подписались</h1>
 </body>
 </html>

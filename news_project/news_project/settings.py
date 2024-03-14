@@ -27,7 +27,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
-    # 'django-insecure-1suie7kx43xwm@np$ipd)aji957yn0119gzkobaa@j@$5)9%o9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -56,7 +55,7 @@ INSTALLED_APPS = [
 
     # мои приложения:
     # 'appnews',  # когда дополняем функционал apps делаем обявление приложения, как в строке ниже, как класс в apps:
-    'appnews.apps.AppnewsConfig',
+    'appnews.apps.AppnewsConfig',  # например для отправки писем, если в это app что то добавлял
     'accounts',
     'mail',
 
@@ -192,7 +191,7 @@ EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_USE_TLS = False  # прописывать это не надо, т.к. False по умолчанию, но помнить стоит
+EMAIL_USE_TLS = False  # Прописывать это не надо, т.к. False по умолчанию, но помнить стоит
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
@@ -202,8 +201,9 @@ EMAIL_SUBJECT_PREFIX = None  # по умолчанию [Django], с ней в т
 # настройка для отправки менеджерам и админам компании (из коробки Джанго):
 SERVER_EMAIL = os.getenv("SERVER_EMAIL")
 
-MANAGERS = os.getenv("MANAGERS")
-ADMINS = os.getenv("ADMINS")
+# пришлось вывести сюда, т.к. из .env - не работает рассылка аюминам и менеджерам, скоррее всего идет проверка на список двойных кортежей на уровне settings.py, а не .env, т.к. в ошибке все списки верны
+MANAGERS = (('Email1', 'email1@gmail.com'), ('anton812.bot', 'anton812.bot@yandex.ru'),)
+ADMINS = (('admin', 'antonbot812@gmail.com'),)
 
 
 # формат даты для периодических задач datetime.datetime:

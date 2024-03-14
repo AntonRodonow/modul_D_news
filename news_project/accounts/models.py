@@ -3,11 +3,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 
 # Create your models here.
-from django.shortcuts import render
-from django.template import Context
 
 from django.core.mail import EmailMultiAlternatives, mail_managers, mail_admins
 from django.template.loader import get_template
+
+from news_project.settings import SITE_URL
 
 
 class BaseRegisterForm(UserCreationForm):
@@ -35,7 +35,7 @@ class BaseRegisterForm(UserCreationForm):
             text = f'{user.username}, вы успешно зарегистрировались!'
             html = (
                 f'<b>{user.username}</b>, вы успешно зарегистрировались на '
-                f'<a href="http://127.0.0.1:8000/appnews">сайте</a>!'
+                f'<a href="{SITE_URL}/appnews">сайте</a>!'
             )
             msg = EmailMultiAlternatives(  # настройка для отправки html или если это не поддерживается почтой - text
                 subject=subject,
@@ -46,20 +46,20 @@ class BaseRegisterForm(UserCreationForm):
             msg.attach_alternative(html, "text/html")
             msg.send()
 
-        if sendmail == 2:
+        elif sendmail == 2:  # отправка из html файла
             subject = 'Добро пожаловать на наш новостной портал!'
             text = f'{user.username}, вы успешно зарегистрировались!'
-            html = get_template('accounts/email/email_confirmation_message.html').render()  # интеерсное расширение .txt
-            msg = EmailMultiAlternatives(  # настройка для вариантной отправки html или если не поддерживается почтой - text
-                subject=subject,
+            html = get_template('accounts/email/email_confirmation_message.html').render()
+            msg = EmailMultiAlternatives(  # настройка для вариантной отправки html или
+                subject=subject,           # если не поддерживается почтой - text
                 body=text,
-                from_email=None,
+                from_email=None,  # берет по умолчанию из settings
                 to=[user.email]
             )
             msg.attach_alternative(html, "text/html")
             msg.send()
 
-        # отправка уведомлений менеджерам сайта и ниже админам:
+        # отправка уведомлений менеджерам сайта и ниже админам, каждый получает отдельное письмо и не видит кто еще его получил:
         mail_managers(
             subject='Новый пользователь!',
             message=f'Пользователь {user.username} зарегистрировался на сайте.'
@@ -67,9 +67,9 @@ class BaseRegisterForm(UserCreationForm):
 
         mail_admins(
             subject='Новый пользователь!',
-            message=f'Пользователь {user.username} зарегистрировался на сайте.'
+            message=f'Пользователь {user.username}-{user.first_name}-{user.last_name} зарегистрировался на сайте.'
         )
-
+        print('TEST USER')
         return user
 
     class Meta:

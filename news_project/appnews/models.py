@@ -7,7 +7,8 @@ from django.urls import reverse
 
 
 class Author(models.Model):
-    authorUser = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Автор:')  # db_index=True попробовать позже
+    authorUser = models.OneToOneField(User, on_delete=models.CASCADE,
+                                      verbose_name='Автор:')  # db_index=True попробовать позже
     ratingAuthor = models.SmallIntegerField(default=0, verbose_name="Рейтинг:")
 
     def update_rating(self):
@@ -31,8 +32,9 @@ class Author(models.Model):
 class Category(models.Model):
     """ 4 категории публикаций"""
     name = models.CharField(max_length=64, unique=True, verbose_name="Категория:")
-    subscribers = models.ManyToManyField(User, blank=True, verbose_name="Подписчики/пользователи:",  # в админ панели мени ту мени не отображаются, нельзя просто добавлять и убирать подписчиков
-                                         related_name='categories')  # related_name для не использования _set, нужной для обратной связей
+    subscribers = models.ManyToManyField(User, blank=True, verbose_name="Подписчики/пользователи:",
+# в админ панели мени ту мени не отображаются, нельзя просто добавлять и убирать подписчиков, как нет такого поля в БД - отдельная таблица
+                                         related_name='categories')  # related_name для не использования _set, нужной для обратной связей. Можно было обявить through='Subscription', если заранее знать (сейчас не хочу БД переделывать)
 
     def __str__(self):
         return f'{self.name}'
@@ -57,7 +59,8 @@ class Post(models.Model):
     title = models.CharField(max_length=128, verbose_name="Заголовок:")
     text = models.TextField(verbose_name="Текст поста:")
     rating = models.SmallIntegerField(default=0, verbose_name="Рейтинг:")
-    postArticleCategory = models.ManyToManyField(to="Category", through='PostCategory', related_name='post')  # verbose_name="Категория: .Сдалал для теста в forms.py
+    postArticleCategory = models.ManyToManyField(to="Category", through='PostCategory',  # нет такого поля в БД - отдельная таблица
+                                                 related_name='post')  # verbose_name="Категория:" обявил в forms.py
 
     def like(self):
         self.rating += 1
@@ -94,8 +97,10 @@ class PostCategory(models.Model):
     дополнительные поля кроме ключей двух таблиц.
     Создана в учебных целях. Пример верного оформления в
     классе Category, поле subscribers"""
-    postThrough = models.ForeignKey(to="Post", on_delete=models.CASCADE, verbose_name='Пост/Новость:')
-    categoryThrough = models.ForeignKey(to="Category", on_delete=models.CASCADE, verbose_name='Категория:')
+    postThrough = models.ForeignKey(to="Post", on_delete=models.CASCADE, verbose_name='Пост/Новость:',
+                                    related_name='post')
+    categoryThrough = models.ForeignKey(to="Category", on_delete=models.CASCADE, verbose_name='Категория:',
+                                        related_name='category')
 
     def __str__(self):
         return f'{self.postThrough}\t...\t{self.categoryThrough}'  # найти способ ставить табуляцию в админ панели
@@ -131,7 +136,9 @@ class Comment(models.Model):
         verbose_name_plural = "Коментарии"
 
 
-# class Subscription(models.Model):
+# class Subscription(models.Model):  # Добавление класса с миграцией БД не меняет, т.к. мы не прописываем through= что через эту таблицу делать. Работает что с этим классом, что без одинаково, разве что в админ панель добавить.
 #     """Таблица Юзера к категориям. ManyToMany"""
-#     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='subscriptions', verbose_name='Пользователь:')
-#     category = models.ForeignKey(to='Category', on_delete=models.CASCADE, related_name='subscriptions', verbose_name='Категории:')
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions',
+#                              verbose_name='Пользователь:')
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subscriptions',
+#                                  verbose_name='Категории:')

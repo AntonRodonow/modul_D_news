@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.db.models.signals import m2m_changed, post_save
@@ -15,7 +16,7 @@ def send_notification(preview, pk, title, all_email_to_subscribers, author):
         'link': f'{SITE_URL}/appnews/{pk}',
         'author': author,
     })
-    print(html_content)
+
     print("тест send_notification")
     msg = EmailMultiAlternatives(
         subject=title,
@@ -27,22 +28,27 @@ def send_notification(preview, pk, title, all_email_to_subscribers, author):
     msg.send()
 
 
-@receiver(m2m_changed, sender=PostCategory)  # sender - Класс для которой создан экземпляр. Промежуточный класс модели, описывающий ManyToManyField. Этот класс создается автоматически при определении поля «многие ко многим»; вы можете получить к нему доступ, используя through атрибут в поле многие-ко-многим.
-def notify_managers_post(sender, instance, **kwargs):  # название метода добровольно, created не нужен, ошибка с ним; instance - Фактический экземпляр только что созданной модели.
+@receiver(m2m_changed,
+          sender=PostCategory)  # sender - Класс для которой создан экземпляр. Промежуточный класс модели, описывающий ManyToManyField. Этот класс создается автоматически при определении поля «многие ко многим»; вы можете получить к нему доступ, используя through атрибут в поле многие-ко-многим.
+def notify_managers_post(sender, instance,
+                         **kwargs):  # название метода добровольно, created не нужен, ошибка с ним; instance - Фактический экземпляр только что созданной модели.
     """Отправка о новых публикациях подписчикам на почту. Подготовка к отправке"""
-    all_email_to_subscribers: list[str] = [SERVER_EMAIL, ]
+    all_email_to_subscribers = None  # : list[str] = None
     print("тест notify_managers_post")
     if kwargs['action'] == 'post_add':
         for category in instance.postArticleCategory.all():  # если мы можем добавлять к нашему поусту несколько категорий, это будет оптимальным
-            # subem = list(User.objects.filter(categories__category__in=category).values_list('email', flat=True))
-            # print(subem, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            for user in category.subscribers.all():  # либо от этого user брать email, username и отправлять каждому пользователю
-                all_email_to_subscribers.append(user.email)
+            subemail = set(User.objects.filter(categories__name=category).values_list('email', flat=True))  # если оставить __in и туда попадет только один элемент, он не проитерируется (одна категория)
+            all_email_to_subscribers = list(subemail)
+            print(subemail, "subemail")  # откуда берется первый email в виде пустой строки, стоит разобраться.
+            # for user in category.subscribers.all():  # вторая возможная реализация
+            #     if user.email not in all_email_to_subscribers:
+            #         all_email_to_subscribers.append(user.email)
 
     send_notification(instance.preview, instance.id, instance.title, all_email_to_subscribers,
                       instance.author)
 
- # для теста
-@receiver(post_save, sender=Post)
-def news_created(instance, **kwargs):
-    print('Создана новость', instance)
+
+# # для теста
+# @receiver(post_save, sender=Post)
+# def news_created(instance, **kwargs):
+#     print('Создана новость', instance)

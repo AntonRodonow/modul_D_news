@@ -35,10 +35,9 @@ class PostList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
-        # context['posts'] = Post.objects.all()
         context['form'] = PostForm()
         context['time_now'] = datetime.utcnow()
-        context['news'] = Post.objects.all()  # для тестирования, тоже что и context['posts']
+        context['news'] = Post.objects.all()
         context['Article'] = Post.objects.filter(categoryType="AR")
         context['New'] = Post.objects.filter(categoryType="NW")
         return context

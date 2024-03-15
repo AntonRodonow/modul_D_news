@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
-from .models import PostCategory, Post
+from .models import PostCategory
 
 from news_project.settings import SITE_URL, SERVER_EMAIL  # подчеркивает, но работает, через appnews не ищет
 
@@ -28,10 +28,8 @@ def send_notification(preview, pk, title, all_email_to_subscribers, author):
     msg.send()
 
 
-@receiver(m2m_changed,
-          sender=PostCategory)  # sender - Класс для которой создан экземпляр. Промежуточный класс модели, описывающий ManyToManyField. Этот класс создается автоматически при определении поля «многие ко многим»; вы можете получить к нему доступ, используя through атрибут в поле многие-ко-многим.
-def notify_managers_post(sender, instance,
-                         **kwargs):  # название метода добровольно, created не нужен, ошибка с ним; instance - Фактический экземпляр только что созданной модели.
+@receiver(m2m_changed, sender=PostCategory)  # Sender - Класс для которой создан экземпляр. Промежуточный класс модели, описывающий ManyToManyField. Этот класс создается автоматически при определении поля «многие ко многим»; вы можете получить к нему доступ, используя through атрибут в поле многие-ко-многим.
+def notify_managers_post(sender, instance, **kwargs):  # название метода добровольно, created не нужен, ошибка с ним; instance - Фактический экземпляр только что созданной модели.
     """Отправка о новых публикациях подписчикам на почту. Подготовка к отправке"""
     all_email_to_subscribers = None  # : list[str] = None
     print("тест notify_managers_post")

@@ -16,7 +16,6 @@ class BaseRegisterForm(UserCreationForm):
     first_name = forms.CharField(label="Имя")
     last_name = forms.CharField(label="Фамилия")
 
-    @property
     def save(self):  # request не было в рабочей версии, тестирую
         """Сохрание нового user в БД, присвоение низших прав доступа при регистрации.
         Отправка приветствия на почту нового пользователя"""
@@ -59,7 +58,8 @@ class BaseRegisterForm(UserCreationForm):
             msg.attach_alternative(html, "text/html")
             msg.send()
 
-        # отправка уведомлений менеджерам сайта и ниже админам, каждый получает отдельное письмо и не видит кто еще его получил:
+        # отправка уведомлений менеджерам сайта и ниже админам, каждый получает отдельное письмо и
+        # не видит кто еще его получил:
         mail_managers(
             subject='Новый пользователь!',
             message=f'Пользователь {user.username} зарегистрировался на сайте.'

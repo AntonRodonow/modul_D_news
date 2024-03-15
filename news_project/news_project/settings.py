@@ -31,31 +31,31 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:<port_number>', ]  # '127.0.0.1', 'localhost' - было пусто. Нужно для гугл авторизации;
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:<port_number>', ]  # '127.0.0.1', 'localhost' - было пусто. Нужно для гугл-авторизации;
 
 
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',  # провека уровня доступа авторизованного пользователя на какое-либо действие, дает класс User, необходим для регистрации по др. аккаунтов
+    'django.contrib.auth',  # Провека уровня доступа авторизованного пользователя на какое-либо действие, дает класс User, необходим для регистрации по др. аккаунтов
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',  # необходим также для рег по др. аккаунтов
+    'django.contrib.messages',  # Необходим также для рег по др. аккаунтов
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
 
-    # нужны для рег по др. аккаунтам:
+    # Нужны для рег по др. аккаунтам:
     'allauth',  # установка совместно pip install django-allauth
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.yandex',
-    'allauth.socialaccount.providers.google',  # не функционирует, т.к. нужен сертификат ssl для https
+    'allauth.socialaccount.providers.google',  # Не функционирует, т.к. нужен сертификат ssl для https
 
 
     # мои приложения:
-    # 'appnews',  # когда дополняем функционал apps делаем обявление приложения, как в строке ниже, как класс в apps:
-    'appnews.apps.AppnewsConfig',  # например для отправки писем, если в это app что то добавлял
+    # 'appnews', # когда дополняем функционал apps делаем обявление приложения, как в строке ниже, как класс в apps:
+    'appnews.apps.AppnewsConfig',  # например для отправки писем, если в это app что-то добавлял
     'accounts',
     'mail',
 
@@ -76,7 +76,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",  # нужен для рег через сторонние сервисы (напр. яндекс, гугл)
 ]
 
-SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), по мимо прочего, при ошибках, отсутствыие SITE_ID не вызовет сбой в работе сайта, но нужен для работы некоторых сторонних библиотек
+SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), помимо прочего, при ошибках, отсутствыие SITE_ID не вызовет сбой в работе сайта, но нужен для работы некоторых сторонних библиотек
 
 SITE_URL = 'http://127.0.0.1:8000'
 
@@ -99,7 +99,7 @@ TEMPLATES = [
 ]
 
 
-# Для регистрации с др. ресурсов AUTHENTICATION_BACKENDS (гугл,яндекс аккаунтов):
+# Для регистрации с др. ресурсов AUTHENTICATION_BACKENDS (гугл, яндекс аккаунтов):
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
@@ -112,7 +112,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'  # код работает и без этой строки
-ACCOUNT_EMAIL_VERIFICATION = 'optional'   # подтверждение на почту отправлено (подтверждать не обязательно для доступа к сайту). 'mandatory' - доступ только после подтверждения с почты
+ACCOUNT_EMAIL_VERIFICATION = 'optional'   # Подтверждение на почту отправлено (подтверждать не обязательно для доступа к сайту). 'Mandatory' - доступ только после подтверждения с почты
 # аккаунта, после подтверждения которого восстанавливается полная функциональность учётной записи "none"(без подтвержд)
 ACCOUNT_FORMS = {'signup': 'account.models.BaseRegisterForm'}  # форма регистрации и отправки почты работает и без этой строки кода
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True  # автоактивация аккаунта после регистрации на сайте сразу, как только мы перейдём по ссылке
@@ -201,7 +201,7 @@ EMAIL_SUBJECT_PREFIX = None  # по умолчанию [Django], с ней в т
 # настройка для отправки менеджерам и админам компании (из коробки Джанго):
 SERVER_EMAIL = os.getenv("SERVER_EMAIL")
 
-# пришлось вывести сюда, т.к. из .env - не работает рассылка аюминам и менеджерам, скоррее всего идет проверка на список двойных кортежей на уровне settings.py, а не .env, т.к. в ошибке все списки верны
+# Пришлось вывести сюда, т.к. из .env - не работает рассылка аюминам и менеджерам, скоррее всего идет проверка на список двойных кортежей на уровне settings.py, а не .env, т.к. в ошибке все списки верны
 MANAGERS = (('Email1', 'email1@gmail.com'), ('anton812.bot', 'anton812.bot@yandex.ru'),)
 ADMINS = (('admin', 'antonbot812@gmail.com'),)
 

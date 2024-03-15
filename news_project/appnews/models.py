@@ -32,9 +32,11 @@ class Author(models.Model):
 class Category(models.Model):
     """ 4 категории публикаций"""
     name = models.CharField(max_length=64, unique=True, verbose_name="Категория:")
+    # в админ панели мени ту мени не отображаются, как нет такого поля в БД - отдельная таблица:
     subscribers = models.ManyToManyField(User, blank=True, verbose_name="Подписчики/пользователи:",
-# в админ панели мени ту мени не отображаются, нельзя просто добавлять и убирать подписчиков, как нет такого поля в БД - отдельная таблица
-                                         related_name='categories')  # related_name для не использования _set, нужной для обратной связей. Можно было обявить through='Subscription', если заранее знать (сейчас не хочу БД переделывать)
+                                         related_name='categories')
+    # Related_name для не использования _set, нужной для обратной связи. Можно было обявить through='Subscription',
+    # если заранее знать (сейчас не хочу БД переделывать)
 
     def __str__(self):
         return f'{self.name}'
@@ -59,8 +61,8 @@ class Post(models.Model):
     title = models.CharField(max_length=128, verbose_name="Заголовок:")
     text = models.TextField(verbose_name="Текст поста:")
     rating = models.SmallIntegerField(default=0, verbose_name="Рейтинг:")
-    postArticleCategory = models.ManyToManyField(to="Category", through='PostCategory',  # нет такого поля в БД - отдельная таблица
-                                                 related_name='post')  # verbose_name="Категория:" обявил в forms.py
+    postArticleCategory = models.ManyToManyField(to="Category", through='PostCategory', related_name='post')
+    # Нет такого поля postArticleCategory в БД - отдельная таблица, verbose_name="Категория:" обявил в forms.py
 
     def like(self):
         self.rating += 1
@@ -93,7 +95,7 @@ class Post(models.Model):
 
 
 class PostCategory(models.Model):
-    """Такую отдельну табл. обычно не создают если не нужны
+    """Такую отдельну таблицу обычно не создают, если не нужны
     дополнительные поля кроме ключей двух таблиц.
     Создана в учебных целях. Пример верного оформления в
     классе Category, поле subscribers"""
@@ -113,7 +115,7 @@ class PostCategory(models.Model):
 class Comment(models.Model):
     commentPost = models.ForeignKey(to="Post",
                                     on_delete=models.CASCADE, verbose_name='На пост:')  # related_name='comment',
-    # если надо ссылать в шаблоне через коммент на пост, т.к. с комента на пост нет прямой ссылки, только связь по
+    # Если надо ссылать в шаблоне через коммент на пост, т.к. с комента на пост нет прямой ссылки, только связь по
     # ключу, а значит и вызов тольк очерез .commentPost_set, работает со всеми полями models
     commentUser = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='На автора:')
     text = models.TextField(editable=True, help_text='Тут хелп текст к коментариям', verbose_name="Коментарий:")
@@ -136,7 +138,9 @@ class Comment(models.Model):
         verbose_name_plural = "Коментарии"
 
 
-# class Subscription(models.Model):  # Добавление класса с миграцией БД не меняет, т.к. мы не прописываем through= что через эту таблицу делать. Работает что с этим классом, что без одинаково, разве что в админ панель добавить.
+# class Subscription(models.Model):
+# Добавление класса с миграцией БД не меняет, т.к. мы не прописываем through= в классе Category,
+# что через эту таблицу делать. Работает что с этим классом, что без одинаково, разве что в админ панель можно добавить.
 #     """Таблица Юзера к категориям. ManyToMany"""
 #     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions',
 #                              verbose_name='Пользователь:')

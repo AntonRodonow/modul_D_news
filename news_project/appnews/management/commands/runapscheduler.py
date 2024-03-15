@@ -1,6 +1,5 @@
 import logging
 
-from django.conf import settings
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -8,7 +7,7 @@ from django.core.management.base import BaseCommand
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 
-from django.core.mail import send_mail
+# from django.conf import settings as django_settings # крутой способ загрузить что-то из settings.py
 from appnews.tasks import weekly_digest  # если подчеркивает красным выставить Mark Directory -> Sorce Root
 
 
@@ -33,11 +32,12 @@ class Command(BaseCommand):
         scheduler = BlockingScheduler(timezone='Europe/Moscow')
         scheduler.add_jobstore(DjangoJobStore(), "default")
 
-        # добавляем работу нашему задачнику
+        # добавляем работу нашему задачнику:
         scheduler.add_job(
             my_job,
-            trigger=CronTrigger(day_of_week='fri', hour=18, minute='00'),  # Еженедльная отправка по пятницам (можно цифрой 5), врмея цифрой или строкой, 00 по умолчанию
-            # trigger=CronTrigger(day_of_week='thu', hour=17, minute='40'),
+            # # Еженедльная отправка по пятницам (можно цифрой 5), врмея цифрой или строкой, 00 по умолчанию:
+            trigger=CronTrigger(day_of_week='fri', hour=18, minute='00'),
+            # trigger=CronTrigger(day_of_week='thu', hour=17, minute='40'),  # стока для тестирования-отладки
             id="my_job",
             max_instances=10,
             replace_existing=True,
@@ -50,7 +50,7 @@ class Command(BaseCommand):
             trigger=CronTrigger(
                 day_of_week="mon", hour="00", minute="00"
             ),
-            # Каждую неделю будут удаляться старые задачи, которые либо не удалось выполнить, либо уже выполнять не надо.
+            # Каждую неделю будут удаляться старые задачи, которые либо не удалось выполнить, либо уже выполнять не надо
             id="delete_old_job_executions",
             max_instances=1,
             replace_existing=True,

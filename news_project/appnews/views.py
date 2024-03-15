@@ -6,12 +6,12 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 # from django.shortcuts import render  # # Для будущей пагинации после фитьрации кверисета статей
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
+# from django.urls import reverse
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView  # FormView
 
 from .filters import PostFilter
 from .forms import PostForm
-from .models import Post, Category, PostCategory
+from .models import Post, Category  # PostCategory
 from datetime import datetime
 from news_project.settings import SERVER_EMAIL
 
@@ -27,8 +27,8 @@ class PostList(ListView):
     Вывод новостей и статей, либо только статей, либо только новостей
     """
     model = Post
-    template_name = 'appnews/posts.html'  # почему не работает автоматическое определение положения шаблона в папке темплейтс???
-    context_object_name = 'posts'  # вызов объекта из шаблона - поскольку есть поле model = Post, можно задать так, а можно как сейчас в get_context_data
+    template_name = 'appnews/posts.html'
+    context_object_name = 'posts'  # вызов объекта из шаблона - поскольку есть поле model = Post, можно задать так, а можно, как сейчас, в get_context_data
     ordering = '-id'  # или queryset = Post.objects.order_by('-id')
     paginate_by = 10
 
@@ -135,8 +135,8 @@ class CategoryListView(ListView):
         context = super().get_context_data(**kwargs)
         context['is_subscriber'] = self.request.user in self.category.subscribers.all()  # True если юзер не подписан на категорию
         context['category'] = self.category  # ссылка через модель Post на модель Category (меняю postArticleCategory тут и выше строкой)
-        context['posts'] = Post.objects.all()  # возможно работет без этой строки, подхватывая из модели Post, т.к. мы загружаем модель Post в первой строкой вьюшки
-        context['catpost'] = Post.objects.filter(postArticleCategory=self.category)  # возможно работет без этой строки, подхватывая из модели Post, т.к. мы загружаем модель Post в первой строкой вьюшки
+        context['posts'] = Post.objects.all()  # Возможно работет без этой строки, подхватывая из модели Post, т.к. мы загружаем модель Post в первой строкой вьюшки
+        context['catpost'] = Post.objects.filter(postArticleCategory=self.category)  # Возможно работет без этой строки, подхватывая из модели Post, т.к. мы загружаем модель Post в первой строкой вьюшки
         context['categorylistview'] = True  # проверка для теплейтса, не обязательная, но пусть останется для примера
         return context
 
@@ -173,7 +173,7 @@ def subscribe(request, pk):
             recipient_list=[f'{email}', ],
         )
 
-    except Exception as n:
+    except Exception as e:
         print('Exception вызван для попытки отправить письмо подписчикам о успешной подписке')
     return render(request, 'appnews/subscribe.html', {'category': category, 'message': message, 'user': user.username})
     # словарь последним аргументом это замена контекста для шаблона (доступно для render())

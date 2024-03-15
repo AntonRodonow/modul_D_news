@@ -6,7 +6,7 @@ from .views import BaseRegisterView, upgrade_me
 urlpatterns = [
     path('signup/', BaseRegisterView.as_view(template_name='accounts/signup.html'), name='signup'),
     path('login/', LoginView.as_view(template_name='accounts/login.html'), name='login'),
-    # он переопределяет выход из аккаунта, т.е. не переспрашивает выход. Работает либо template_name, либо next_page,
+    # Он переопределяет выход из аккаунта, т.е. не переспрашивает выход. Работает либо template_name, либо next_page,
     # в которую передается name из этого же urls.py
     # (можно без этой строки кода, сбработает из настроек LOGOUT_REDIRECT_URL):
     path('logout/', LogoutView.as_view(template_name='accounts/logout.html', next_page='login'), name='logout'),

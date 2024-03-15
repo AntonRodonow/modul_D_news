@@ -3,13 +3,14 @@ from django.template.loader import render_to_string
 
 from .models import Post, Category
 import datetime as DT
-from datetime import timedelta, date, datetime
+from datetime import timedelta
 from backports.zoneinfo import ZoneInfo
 
-from celery import shared_task
-import time
+# from celery import shared_task
+# import time
 
 from news_project.settings import SERVER_EMAIL, SITE_URL, TIME_ZONE  # подчеркивает, но работает, через appnews не ищет
+# можно from django.conf import settings и дальше пеменные или from django.conf.global_settings import SERVER_EMAIL
 
 
 # @shared_task

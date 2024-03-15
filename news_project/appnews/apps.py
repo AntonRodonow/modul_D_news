@@ -7,6 +7,5 @@ class AppnewsConfig(AppConfig):
 
     def ready(self):
         from . import signals
-        # import appnews.signals  # либо так
+        # import appnews.signals # либо так
         from .tasks import weekly_digest
-        # from newapp.management.commands.runapscheduler import my_job

@@ -32,10 +32,9 @@ def send_notification(preview, pk, title, all_email_to_subscribers, author):
 def notify_managers_post(sender, instance, **kwargs):  # название метода добровольно, created не нужен, ошибка с ним; instance - Фактический экземпляр только что созданной модели.
     """Отправка о новых публикациях подписчикам на почту. Подготовка к отправке"""
     all_email_to_subscribers = None  # : list[str] = None
-    print("тест notify_managers_post")
     if kwargs['action'] == 'post_add':
-        for category in instance.postArticleCategory.all():  # если мы можем добавлять к нашему поусту несколько категорий, это будет оптимальным
-            subemail = set(User.objects.filter(categories__name=category).values_list('email', flat=True))  # если оставить __in и туда попадет только один элемент, он не проитерируется (одна категория)
+        for category in instance.postArticleCategory.all():  # если мы можем добавлять к нашему посту несколько категорий, это будет оптимальным
+            subemail = set(User.objects.filter(categories__name=category).values_list('email', flat=True))  # если оставить __in и туда попадет только один элемент, он не проитерируется (одна категория) - вылетит ошибка
             all_email_to_subscribers = list(subemail)
             print(subemail, "subemail")  # откуда берется первый email в виде пустой строки, стоит разобраться.
             # for user in category.subscribers.all():  # вторая возможная реализация

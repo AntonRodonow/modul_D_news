@@ -17,10 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from appnews.tasks import hello  # тест celery, redis
+
 urlpatterns = [
     path('', include('appnews.urls')),  # для стадии тестирования, простой достук к главной странице проекта
     path('admin/', admin.site.urls),
     path('appnews/', include('appnews.urls')),  # основаная логика проекта
     path('accounts/', include('accounts.urls')),  # приложение для создания пользователей
     path('accounts/', include('allauth.urls')),  # приложение для организации приветственной почтовой рассылки, расширение прав users
+    path('test/', hello),  # celery, redis тестирование
 ]

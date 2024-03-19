@@ -141,11 +141,6 @@ class CategoryListView(ListView):
         return context
 
 
-# class CategoryView(FormView, View, Category):  # добавил View, Category, Post вероятно не нужны!!!!! (старый комент, проверю)
-#     # form_class = CategorySubscribers
-#     template_name = 'appnews/subscribers.html'
-#     success_url = '/appnews'
-
 @login_required   # еще один способ на заметку
 def subscribe(request, pk):
     """Добавление подписки для user на категории публикаций (класса Category).
@@ -175,5 +170,6 @@ def subscribe(request, pk):
 
     except Exception as e:
         print('Exception вызван для попытки отправить письмо подписчикам о успешной подписке')
-    return render(request, 'appnews/subscribe.html', {'category': category, 'message': message, 'user': user.username})
+    return render(request, 'appnews/subscribe.html', {'category': category,
+                                                      'message': message, 'user': user.username})
     # словарь последним аргументом это замена контекста для шаблона (доступно для render())

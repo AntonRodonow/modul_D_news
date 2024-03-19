@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 dotenv_path = Path(".local.env")
 load_dotenv(dotenv_path=dotenv_path)
 
@@ -76,7 +77,8 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",  # нужен для рег через сторонние сервисы (напр. яндекс, гугл)
 ]
 
-SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), помимо прочего, при ошибках, отсутствыие SITE_ID не вызовет сбой в работе сайта, но нужен для работы некоторых сторонних библиотек
+SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), помимо прочего, при ошибках,
+# отсутствыие SITE_ID не вызовет сбой в работе сайта, но нужен для работы некоторых сторонних библиотек
 
 SITE_URL = 'http://127.0.0.1:8000'
 
@@ -210,3 +212,12 @@ ADMINS = (('admin', 'antonbot812@gmail.com'),)
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 # если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
+# Celery, Redis.   # Включен удаленный редис, а локальный закоментирован (redis://логин:пароль@endpoint:port), что значит логин, хз, т.к. есть fist name, last name, а логина нет
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'  # указывает на URL брокера сообщений
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'  # указывает на хранилище результатов выполнения задач
+CELERY_ACCEPT_CONTENT = ['application/json']  # допустимый формат данных
+CELERY_TASK_SERIALIZER = 'json'  # метод сериализации задач
+CELERY_RESULT_SERIALIZER = 'json'  # метод сериализации результатов
+# CELERY_RESULT_BACKEND = 'redis://antonrodionov:TRyV9f6gcAbGJFAu2iXRTCX87E4YZ6WW@redis-11304.c292.ap-southeast-1-1.ec2.cloud.redislabs.com:11304'
+# CELERY_BROKER_URL = 'redis://antonrodionov:TRyV9f6gcAbGJFAu2iXRTCX87E4YZ6WW@redis-11304.c292.ap-southeast-1-1.ec2.cloud.redislabs.com:11304'

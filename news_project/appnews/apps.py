@@ -1,3 +1,4 @@
+# import redis
 from django.apps import AppConfig
 
 

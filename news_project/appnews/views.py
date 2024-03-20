@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.cache import cache
 
 # Create your views here.
 # from django.core.paginator import Paginator  # Для будущей пагинации после фитьрации кверисета статей
@@ -50,6 +51,15 @@ class PostDetailView(DetailView):
     queryset = Post.objects.all()
     template_name = 'appnews/post_detail.html'
     context_object_name = 'post'
+
+# для кеширования:
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'{self.kwargs["pk"]}', None)
+        # если объекта нет в кэше, то получаем его и записываем в кэш
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'{self.kwargs["pk"]}', obj)
+            return obj
 
 
 class PostAddView(PermissionRequiredMixin, CreateView):

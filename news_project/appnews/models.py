@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models
 
 # Create your models here.
@@ -88,6 +89,10 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.title}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # сначала вызываем метод родителя, чтобы объект сохранился
+        cache.delete(f'{self.pk}')  # затем удаляем его из кэша, чтобы сбросить его
 
     class Meta:
         verbose_name = "Статья/Новость"

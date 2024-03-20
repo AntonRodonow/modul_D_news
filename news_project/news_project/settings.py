@@ -74,7 +74,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    "allauth.account.middleware.AccountMiddleware",  # нужен для рег через сторонние сервисы (напр. яндекс, гугл)
+    'allauth.account.middleware.AccountMiddleware',  # нужен для рег через сторонние сервисы (напр. яндекс, гугл)
 ]
 
 SITE_ID = 1  # дает запрос на сопоставление сайтов (список возможных сайтов), помимо прочего, при ошибках,
@@ -219,5 +219,18 @@ CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'  # указывает на хр
 CELERY_ACCEPT_CONTENT = ['application/json']  # допустимый формат данных
 CELERY_TASK_SERIALIZER = 'json'  # метод сериализации задач
 CELERY_RESULT_SERIALIZER = 'json'  # метод сериализации результатов
+CELERY_TIMEZONE = 'Europe/Moscow'
 # CELERY_RESULT_BACKEND = 'redis://antonrodionov:TRyV9f6gcAbGJFAu2iXRTCX87E4YZ6WW@redis-11304.c292.ap-southeast-1-1.ec2.cloud.redislabs.com:11304'
 # CELERY_BROKER_URL = 'redis://antonrodionov:TRyV9f6gcAbGJFAu2iXRTCX87E4YZ6WW@redis-11304.c292.ap-southeast-1-1.ec2.cloud.redislabs.com:11304'
+
+# Куширование в файл:
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),  # Не забываем создать папку cache_files рядом с manage.py!
+        'TIMEOUT': 60,
+        'OPTIONS': {
+            'MAX_ENTRIES': 10  # Количество запросов перед повторным кешированием данных
+        }
+    }
+}

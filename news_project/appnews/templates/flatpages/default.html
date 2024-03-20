@@ -1,3 +1,5 @@
+{% load cache %}
+{% cache 60 test1 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,6 +59,7 @@
             {% if not request.user.username %}
              <h3>Не авторизован</h3>
             {% endif %}
+{% endcache %}
             {% load custom_tags %}
             <h3>Текущая дата: {% ctime '%d %b %Y Время: %H:%M' %}</h3>
             {% block content1sub %}
@@ -70,6 +73,7 @@
 
             {% block content3 %}
             {% endblock content3 %}
+{% cache 120 test2 %}
         </div>
     </div>
 </div>
@@ -290,3 +294,4 @@
 </footer>
 </body>
 </html>
+{% endcache %}

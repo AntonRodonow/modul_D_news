@@ -14,7 +14,8 @@ appCelery.autodiscover_tasks()  # автоматическое отслоежи�
 appCelery.conf.beat_schedule = {
     'news_every_monday_8am_for_subscribers': {
         'task': 'appnews.tasks.weekly_digest_celery',
-        'schedule': crontab(hour='8', minute='0', day_of_week='monday'),
+        # 'schedule': crontab(hour='8', minute='0', day_of_week='monday'),
+        'schedule': crontab(hour='17', minute='11', day_of_week='tuesday'),
         'args': (),
     },
 }

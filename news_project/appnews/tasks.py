@@ -12,6 +12,8 @@ from .models import Post, Category, PostCategory
 import datetime as DT
 from datetime import timedelta
 
+from .signals import notify_managers_post
+
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
@@ -78,65 +80,28 @@ def weekly_digest():
 
 
 # рабодта celery and radis:
-@shared_task
-def hello(request, n=3):
-    print("Hello, world!")  # end celery test
-    for i in range(n):
-        time.sleep(n)
-        print(i)
-    return HttpResponse('Hello!')
+# @shared_task
+# def hello(request, n=3):
+#     print("Hello, world!")  # end celery test
+#     for i in range(n):
+#         time.sleep(n)
+#         print(i)
+#     return HttpResponse('Hello!')
 
 
-# задачи celery and redis на еженедельную отправку писем:
+# задачи celery and redis на еженедельную отправку писем. Назначается в celery.py:
 @shared_task
 def weekly_digest_celery():
-    categories = Category.objects.all()
-    week = timedelta(days=7)
-    for category in categories:
-        category_subscribers = category.subscribers.all()
-        category_subscribers_emails = []
-
-        for subscriber in category_subscribers:
-            category_subscribers_emails.append(subscriber.email)
-
-        weekly_posts_in_category = []
-        posts_in_category = Post.objects.all().filter(postCategory=f'{category.id}')
-
-        for post in posts_in_category:
-            time_delta = DT.datetime.now(ZoneInfo('Europe/Moscow')) - post.dateCreation
-
-            if time_delta < week:
-                weekly_posts_in_category.append(post)
-
-        if category_subscribers_emails:
-            msg = EmailMultiAlternatives(
-                subject=f'Weekly digest for subscribed category "{category}" from News Portal.',
-                body=f'Привет! Еженедельная подборка публикаций в выбранной категории "{category}"',
-                from_email=SERVER_EMAIL,
-                to=category_subscribers_emails,
-            )
-
-            html_content = render_to_string(
-                'weekly_notify.html',
-                {
-                    'digest': set(weekly_posts_in_category),
-                    'category': category,
-                    'SITE_URL': SITE_URL,
-                }
-            )
-
-            msg.attach_alternative(html_content, "text/html")
-
-            msg.send()
-        else:
-            continue
+    print('weekly_digest_celery')
+    weekly_digest()
 
 
-# рассылка после создания новости через celery and redis
+# Рассылка после создания новости через celery and redis. Моя попытка реализация, работает
 @shared_task
-@receiver(m2m_changed, sender=PostCategory)
-def notify_subscribers(sender, instance, **kwargs):
-    all_email_to_subscribers = None
+@receiver(m2m_changed, sender=PostCategory)  # Sender - Класс для которой создан экземпляр. Промежуточный класс модели, описывающий ManyToManyField. Этот класс создается автоматически при определении поля «многие ко многим»; вы можете получить к нему доступ, используя through атрибут в поле многие-ко-многим.
+def notify_managers_post_celery(sender, instance, **kwargs):  # название метода добровольно, created не нужен, ошибка с ним; instance - Фактический экземпляр только что созданной модели.
+    """Отправка о новых публикациях подписчикам на почту. Подготовка к отправке"""
+    all_email_to_subscribers = None  # : list[str] = None
     if kwargs['action'] == 'post_add':
         for category in instance.postArticleCategory.all():  # если мы можем добавлять к нашему посту несколько категорий, это будет оптимальным
             subemail = set(User.objects.filter(categories__name=category).values_list('email', flat=True))  # если оставить __in и туда попадет только один элемент, он не проитерируется (одна категория) - вылетит ошибка
@@ -148,6 +113,7 @@ def notify_subscribers(sender, instance, **kwargs):
         'author': instance.author,
     })
 
+    print("тест send_notification")
     msg = EmailMultiAlternatives(
         subject=instance.title,
         body='',

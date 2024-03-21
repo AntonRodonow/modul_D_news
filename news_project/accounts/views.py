@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Group
-
+from django.contrib.auth.models import Group, User
 # Create your views here.
 from django.shortcuts import redirect
 from django.views.generic import CreateView

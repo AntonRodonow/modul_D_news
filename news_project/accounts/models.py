@@ -1,10 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User, Group
-
+from django.contrib.auth.models import Group, User
 # Create your models here.
-
-from django.core.mail import EmailMultiAlternatives, mail_managers, mail_admins
+from django.core.mail import EmailMultiAlternatives, mail_admins, mail_managers
 from django.template.loader import get_template
 
 from news_project.settings import SITE_URL
@@ -24,8 +22,8 @@ class BaseRegisterForm(UserCreationForm):
         common_group.user_set.add(user)
 
         # настройка отправки приветствий новым users:
-        """выберите форму отправки письма 
-        1- текст в теле данной функции, 
+        """выберите форму отправки письма
+        1- текст в теле данной функции,
         2- текст в .txt файле:"""
         sendmail = 2
 

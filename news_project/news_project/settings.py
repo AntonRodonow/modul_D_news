@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 dotenv_path = Path(".local.env")
 load_dotenv(dotenv_path=dotenv_path)
@@ -156,7 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us'  # язык по умолчанию в админ панели, возможно распространяется на все приложение
 
 TIME_ZONE = 'Europe/Moscow'  # 'UTC' - в базе данных, абсолюное время (нулевой пояс), а TIME_ZONE = 'Europe/Moscow' показывает относительное время (Московское)
 

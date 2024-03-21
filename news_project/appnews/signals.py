@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
+from django.template.loader import render_to_string
+
+from news_project.settings import SERVER_EMAIL, SITE_URL  # подчеркивает, но работает, через appnews не ищет
 
 from .models import PostCategory
-
-from news_project.settings import SITE_URL, SERVER_EMAIL  # подчеркивает, но работает, через appnews не ищет
 
 
 def send_notification(preview, pk, title, all_email_to_subscribers, author):

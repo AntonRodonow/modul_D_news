@@ -1,26 +1,26 @@
-import time
+# import time
+import datetime as dt
+from datetime import timedelta
 
 from celery import shared_task
+
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
-from django.http import HttpResponse
+# from django.http import HttpResponse
 from django.template.loader import render_to_string
 
-from .models import Post, Category, PostCategory
-import datetime as DT
-from datetime import timedelta
+from news_project.settings import SERVER_EMAIL, SITE_URL  # подчеркивает, но работает, через appnews не ищет
+# можно from django.conf import settings и дальше пеменные или from django.conf.global_settings import SERVER_EMAIL
 
-from .signals import notify_managers_post
+from .models import Category, Post, PostCategory
+# from .signals import notify_managers_post
 
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
     from backports.zoneinfo import ZoneInfo  # с применением python ver > 3.9 эта библиотека встроенная
-
-from news_project.settings import SERVER_EMAIL, SITE_URL  # подчеркивает, но работает, через appnews не ищет
-# можно from django.conf import settings и дальше пеменные или from django.conf.global_settings import SERVER_EMAIL
 
 
 def weekly_digest():
@@ -39,7 +39,7 @@ def weekly_digest():
         posts_in_category = Post.objects.all().filter(postArticleCategory=f'{category.id}')
 
         for post in posts_in_category:
-            time_delta = DT.datetime.now(ZoneInfo('Europe/Moscow')) - post.dateCreation
+            time_delta = dt.datetime.now(ZoneInfo('Europe/Moscow')) - post.dateCreation
 
             if time_delta < week:
                 weekly_posts_in_category.append(post)

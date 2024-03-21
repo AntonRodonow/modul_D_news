@@ -1,22 +1,22 @@
+"""Основной контроллер приложения"""
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.cache import cache
-
 # Create your views here.
 # from django.core.paginator import Paginator  # Для будущей пагинации после фитьрации кверисета статей
 # from django.shortcuts import render  # # Для будущей пагинации после фитьрации кверисета статей
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, render
 # from django.urls import reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView  # FormView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView  # FormView
+
+from news_project.settings import SERVER_EMAIL
 
 from .filters import PostFilter
 from .forms import PostForm
-from .models import Post, Category  # PostCategory
-from datetime import datetime
-from news_project.settings import SERVER_EMAIL
-
-
+from .models import Category, Post  # PostCategory
 # if __package__ is None or __package__ == '':  # интересная конструкция, потом почитать побольше
 #     from news_project.settings import SERVER_EMAIL
 # else:
@@ -80,8 +80,8 @@ class PostAddView(PermissionRequiredMixin, CreateView):
 
 
 class PostListFilter(ListView):
-    """ Поиск новости по автору и датам.
-    Пагинация в фитрованном кверисете не реализована,
+    """ Поиск новости по автору и датам"""
+    """Пагинация в фитрованном кверисете не реализована,
     нужно перепоределение в контексте page_obj и is_paginated.
     Временно оставил нерабочую пагинацию в шаблоне до решения проблемы"""
     model = Post
@@ -158,10 +158,10 @@ def subscribe(request, pk):
     user = request.user
     uid = user.id
     category = Category.objects.get(id=pk)
-    qSub = category.subscribers.all()
-    print(qSub, 'Подписчики:', category)
+    q_sub = category.subscribers.all()
+    print(q_sub, 'Подписчики:', category)
 
-    if not qSub.filter(username=user).exists():  # в данном случае сообщение заменено на html файл
+    if not q_sub.filter(username=user).exists():  # в данном случае сообщение заменено на html файл
         category.subscribers.add(user)
         message = f'{request.user}, вы подписались на рассылку публикаций категории: "{category}".'
     else:
@@ -178,7 +178,7 @@ def subscribe(request, pk):
             recipient_list=[f'{email}', ],
         )
 
-    except Exception as e:
+    except Exception:
         print('Exception вызван для попытки отправить письмо подписчикам о успешной подписке')
     return render(request, 'appnews/subscribe.html', {'category': category,
                                                       'message': message, 'user': user.username})

@@ -1,9 +1,9 @@
-import six
 from django import template
 from django.http import HttpResponse
 
-register = template.Library()
+import six
 
+register = template.Library()
 
 CENSOR_LIST = ['дурак',
                'лох',
@@ -11,7 +11,7 @@ CENSOR_LIST = ['дурак',
 
 
 @register.filter(name='censor')
-def censor(value: str) -> str:
+def censor(value: str) -> HttpResponse or str:
 
     try:
         if isinstance(value, six.string_types):

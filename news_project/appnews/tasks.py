@@ -25,7 +25,7 @@ except ImportError:
 
 def weekly_digest():
     """Отправка еженедельной рассылки подписчикам о постах послденей недели в подписанных категориях.
-    Отправляется отдельное письмо на каждую категорию"""
+    Отправляется отдельное письмо на каждую категорию."""
     categories = Category.objects.all()
     week = timedelta(days=7)
     for category in categories:
@@ -100,7 +100,7 @@ def weekly_digest_celery():
 @shared_task
 @receiver(m2m_changed, sender=PostCategory)  # Sender - Класс для которой создан экземпляр. Промежуточный класс модели, описывающий ManyToManyField. Этот класс создается автоматически при определении поля «многие ко многим»; вы можете получить к нему доступ, используя through атрибут в поле многие-ко-многим.
 def notify_managers_post_celery(sender, instance, **kwargs):  # название метода добровольно, created не нужен, ошибка с ним; instance - Фактический экземпляр только что созданной модели.
-    """Отправка о новых публикациях подписчикам на почту. Подготовка к отправке"""
+    """Отправка о новых публикациях подписчикам на почту. Подготовка к отправке."""
     all_email_to_subscribers = None  # : list[str] = None
     if kwargs['action'] == 'post_add':
         for category in instance.postArticleCategory.all():  # если мы можем добавлять к нашему посту несколько категорий, это будет оптимальным

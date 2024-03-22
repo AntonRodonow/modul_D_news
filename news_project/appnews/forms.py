@@ -5,9 +5,7 @@ from .models import Post
 
 
 class PostForm(ModelForm):
-    """
-    Форма для создания статей
-    """
+    """Форма для создания статей."""
 
     class Meta:
         model = Post
@@ -21,9 +19,7 @@ class PostForm(ModelForm):
         }
 
     def clean(self):
-        """
-        Валидация формы. Есть валидация и во вьюшке
-        """
+        """Валидация формы. Есть валидация и во вьюшке."""
         cleand_form = super().clean()
         text = cleand_form.get('text')
         if text is not None and len(text) < 6:

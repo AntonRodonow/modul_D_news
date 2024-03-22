@@ -9,14 +9,15 @@ from news_project.settings import SITE_URL
 
 
 class BaseRegisterForm(UserCreationForm):
-    """Форма регистрации нового юзера"""
+    """Форма регистрации нового юзера."""
+
     email = forms.EmailField(label="Email")
     first_name = forms.CharField(label="Имя")
     last_name = forms.CharField(label="Фамилия")
 
     def save(self):  # request не было в рабочей версии, тестирую
         """Сохрание нового user в БД, присвоение низших прав доступа при регистрации.
-        Отправка приветствия на почту нового пользователя"""
+        Отправка приветствия на почту нового пользователя."""
         user = super(BaseRegisterForm, self).save()
         common_group = Group.objects.get(name='common')  # в name группа по умолчанию
         common_group.user_set.add(user)
@@ -71,7 +72,8 @@ class BaseRegisterForm(UserCreationForm):
         return user
 
     class Meta:
-        """Заполняемые поля при регистрации"""
+        """Заполняемые поля при регистрации."""
+
         model = User
         fields = ("username",
                   "first_name",

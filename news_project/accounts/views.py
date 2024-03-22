@@ -8,7 +8,8 @@ from .models import BaseRegisterForm
 
 
 class BaseRegisterView(CreateView):
-    """Представление с формой регистрации для новых Users"""
+    """Представление с формой регистрации для новых Users."""
+
     model = User
     form_class = BaseRegisterForm
     success_url = '/appnews'
@@ -16,7 +17,7 @@ class BaseRegisterView(CreateView):
 
 @login_required
 def upgrade_me(request):
-    """Даем расширенные права для Users"""
+    """Даем расширенные права для Users."""
     user = request.user
     authors_group = Group.objects.get(name='Autors')
     if not request.user.groups.filter(name='Autors').exists():

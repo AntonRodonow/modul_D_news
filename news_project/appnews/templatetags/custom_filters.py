@@ -22,5 +22,5 @@ def censor(value: str) -> HttpResponse or str:
                         value = value.replace(j, ("*" * len(j)))
             return str(value)
     except (ValueError, TypeError):
-        html = f"<html><body>Invalid input.</body></html>"
+        html = "<html><body>Invalid input.</body></html>"
         return HttpResponse(html)

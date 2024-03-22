@@ -10,7 +10,7 @@ from .models import PostCategory
 
 
 def send_notification(preview, pk, title, all_email_to_subscribers, author):
-    """Отправка о новых публикациях подписчикам на почту. Сама отправка"""
+    """Отправка о новых публикациях подписчикам на почту. Сама отправка."""
     html_content = render_to_string('appnews/subscriber_post_created_email.html', {
         'text': preview,
         'link': f'{SITE_URL}/appnews/{pk}',
@@ -30,7 +30,7 @@ def send_notification(preview, pk, title, all_email_to_subscribers, author):
 
 @receiver(m2m_changed, sender=PostCategory)  # Sender - Класс для которой создан экземпляр. Промежуточный класс модели, описывающий ManyToManyField. Этот класс создается автоматически при определении поля «многие ко многим»; вы можете получить к нему доступ, используя through атрибут в поле многие-ко-многим.
 def notify_managers_post(sender, instance, **kwargs):  # название метода добровольно, created не нужен, ошибка с ним; instance - Фактический экземпляр только что созданной модели.
-    """Отправка о новых публикациях подписчикам на почту. Подготовка к отправке"""
+    """Отправка о новых публикациях подписчикам на почту. Подготовка к отправке."""
     all_email_to_subscribers = None  # : list[str] = None
     if kwargs['action'] == 'post_add':
         for category in instance.postArticleCategory.all():  # если мы можем добавлять к нашему посту несколько категорий, это будет оптимальным

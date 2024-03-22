@@ -30,7 +30,8 @@ class Author(models.Model):
 
 
 class Category(models.Model):
-    """ 4 категории публикаций"""
+    """4 категории публикаций."""
+
     name = models.CharField(max_length=64, unique=True, verbose_name="Категория:")
     # в админ панели мени ту мени не отображаются, как нет такого поля в БД - отдельная таблица:
     subscribers = models.ManyToManyField(User, blank=True, verbose_name="Подписчики/пользователи:",
@@ -102,7 +103,8 @@ class PostCategory(models.Model):
     """Такую отдельну таблицу обычно не создают, если не нужны
     дополнительные поля кроме ключей двух таблиц.
     Создана в учебных целях. Пример верного оформления в
-    классе Category, поле subscribers"""
+    классе Category, поле subscribers."""
+
     postThrough = models.ForeignKey(to="Post", on_delete=models.CASCADE, verbose_name='Пост/Новость:',
                                     related_name='post')
     categoryThrough = models.ForeignKey(to="Category", on_delete=models.CASCADE, verbose_name='Категория:',

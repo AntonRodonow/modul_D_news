@@ -15,13 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 def my_job():
-    """Еженедельные рассылки по пятницам в 18:00. кодом python manage.py runapscheduler"""
+    """Еженедельные рассылки по пятницам в 18:00. кодом python manage.py runapscheduler."""
     weekly_digest()
 
 
 # функция, которая будет удалять неактуальные задачи:
 def delete_old_job_executions(max_age=604_800):  # аргумент max_age в секундах
-    """Удаление неактуальных задач из БД (Отправка еженедельных рассылок)"""
+    """Удаление неактуальных задач из БД (Отправка еженедельных рассылок)."""
     DjangoJobExecution.objects.delete_old_job_executions(max_age)
 
 

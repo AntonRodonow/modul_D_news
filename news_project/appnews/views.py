@@ -1,4 +1,5 @@
-"""Основной контроллер приложения"""
+"""Основной контроллер приложения."""
+
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
@@ -24,9 +25,8 @@ from .models import Category, Post  # PostCategory
 
 
 class PostList(ListView):
-    """
-    Вывод новостей и статей, либо только статей, либо только новостей
-    """
+    """Вывод новостей и статей, либо только статей, либо только новостей."""
+
     model = Post
     template_name = 'appnews/posts.html'
     context_object_name = 'posts'  # вызов объекта из шаблона - поскольку есть поле model = Post, можно задать так, а можно, как сейчас, в get_context_data
@@ -45,9 +45,8 @@ class PostList(ListView):
 
 
 class PostDetailView(DetailView):
-    """
-    Детали новости или статьи
-    """
+    """Детали новости или статьи."""
+
     queryset = Post.objects.all()
     template_name = 'appnews/post_detail.html'
     context_object_name = 'post'
@@ -63,9 +62,8 @@ class PostDetailView(DetailView):
 
 
 class PostAddView(PermissionRequiredMixin, CreateView):
-    """
-    Опубликовать статью или новость
-    """
+    """Опубликовать статью или новость."""
+
     form_class = PostForm
     model = Post
     template_name = 'appnews/post_add.html'
@@ -80,7 +78,8 @@ class PostAddView(PermissionRequiredMixin, CreateView):
 
 
 class PostListFilter(ListView):
-    """ Поиск новости по автору и датам"""
+    """Поиск новости по автору и датам."""
+
     """Пагинация в фитрованном кверисете не реализована,
     нужно перепоределение в контексте page_obj и is_paginated.
     Временно оставил нерабочую пагинацию в шаблоне до решения проблемы"""
@@ -106,9 +105,8 @@ class PostListFilter(ListView):
 
 
 class PostUpdateView(PermissionRequiredMixin, UpdateView):  # убрал лишнее LoginRequiredMixin,
-    """
-    Редактирование статьи или новости
-    """
+    """Редактирование статьи или новости."""
+
     form_class = PostForm
     template_name = 'appnews/post_add.html'
     permission_required = ('appnews.change_post',)
@@ -119,9 +117,8 @@ class PostUpdateView(PermissionRequiredMixin, UpdateView):  # убрал лиш�
 
 
 class PostDeleteView(PermissionRequiredMixin, DeleteView):
-    """
-    Удаление статей или новостей
-    """
+    """Удаление статей или новостей."""
+
     queryset = Post.objects.all()
     template_name = 'appnews/post_delete.html'
     success_url = '/appnews'
@@ -129,9 +126,8 @@ class PostDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class CategoryListView(ListView):
-    """
-    Отображение публикаций одной выбранной категории
-    """
+    """Отображение публикаций одной выбранной категории."""
+
     model = Post
     template_name = 'appnews/category_list.html'
     context_object_name = 'category_news_list'  # список постов в одной категории
@@ -154,7 +150,7 @@ class CategoryListView(ListView):
 @login_required   # еще один способ на заметку
 def subscribe(request, pk):
     """Добавление подписки для user на категории публикаций (класса Category).
-    Отправка письма о новой подписке user"""
+    Отправка письма о новой подписке user."""
     user = request.user
     uid = user.id
     category = Category.objects.get(id=pk)

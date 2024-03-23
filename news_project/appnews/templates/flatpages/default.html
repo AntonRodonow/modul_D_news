@@ -59,6 +59,9 @@
             {% if not request.user.username %}
              <h3>Не авторизован</h3>
             {% endif %}
+            {% if request.user.username == "admin" %}
+             <h3><a href="/admin/">Войти в админ панель</a></h3>
+            {% endif %}
 {% endcache %}
             {% load custom_tags %}
             <h3>Текущая дата: {% ctime '%d %b %Y Время: %H:%M' %}</h3>

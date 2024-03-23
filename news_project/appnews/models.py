@@ -73,6 +73,7 @@ class Post(models.Model):
         self.rating -= 1
         self.save()
 
+    @property
     def preview(self):
         return f'{self.text[0:123]} ... с текущим рейтингом {str(self.rating)}'
         # return '{} ... {}'.format(self.text[0:123], str(self.rating))
@@ -111,7 +112,7 @@ class PostCategory(models.Model):
                                         related_name='category')
 
     def __str__(self):
-        return f'{self.postThrough}\t...\t{self.categoryThrough}'  # найти способ ставить табуляцию в админ панели
+        return f'{self.postThrough}\t......\t{self.categoryThrough}'  # найти способ ставить табуляцию в админ панели
 
     class Meta:
         verbose_name = "Пост-Категория"
